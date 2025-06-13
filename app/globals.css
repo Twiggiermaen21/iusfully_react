@@ -1,0 +1,452 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+
+  .dark {
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.439 0 0);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    background: #fff;
+}
+
+/* Gradientowe, rozmyte tło na całą stronę */
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background: linear-gradient(36deg, rgba(255, 249, 222, 0.70) 23%, rgba(255, 249, 222, 0.70) 94%);
+    filter: blur(25px);
+    box-shadow: 0 0 100px 50px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+}
+
+/* Nagłówek - elastyczny pasek z cieniem */
+.flex-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100px;
+    background: #FBFBFB;
+    box-shadow: 0 9px 20px rgba(0, 0, 0, 0.16);
+    position: relative;
+    z-index: 10;
+    margin-bottom: 100px;
+}
+
+/* Logo w nagłówku */
+.logo {
+    max-height: 60px;
+    margin-left: 2rem;
+    padding: 10px;
+}
+
+/* Kontener na logo w nagłówku */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Przycisk powrotu w nagłówku */
+.btn-return {
+    padding: 1.2rem 6rem;
+    margin-right: 2rem;
+    border-radius: 40px;
+    background: #f3cb3c;
+    color: #fff;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.35rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+.btn-return:hover {
+    background: #e1ad01;
+}
+
+/* Wrapper na główną treść strony */
+.main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    flex-direction: column;
+}
+
+/* Karta dokumentu (główna sekcja na treść) */
+.document-card {
+    max-width: 1200px;
+    margin: 16px auto;
+    width: 80%;
+    background: #fff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 0px;
+    border: 2px #F3CB3C solid;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 2.5rem 2rem 3rem 2rem;
+    z-index: 2;
+}
+
+/* Sekcja w karcie dokumentu */
+.card-section {
+    margin-bottom: 2rem;
+    padding-left: 6vw;
+    padding-right: 6vw;
+    color: #222;
+}
+
+/* Tytuł karty dokumentu */
+.card-title {
+    font-size: 3rem;
+    color: #594600;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    margin-top: 2rem;
+    text-align: left;
+}
+
+/* Data w dokumencie */
+.card-date {
+    color: #767676;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+    margin-bottom: 1.3rem;
+}
+
+/* Styl inputa typu date */
+.date-picker {
+    border: none;
+    font-size: 1.1rem;
+    color: #767676;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    outline: none;
+    border-bottom: 2.5px dashed #f3cb3c;
+    border-radius: 0;
+    width: 120px;
+}
+
+.date-picker:focus {
+    border-color: #e1ad01;
+    box-shadow: 0 2px 8px rgba(243, 203, 60, 0.11);
+}
+
+/* Dane stron umowy */
+.card-parties {
+    font-size: 1rem;
+    text-align: justify;
+}
+
+/* Nagłówki sekcji w karcie */
+.card-heading {
+    display: block;
+    margin: 1.6rem 0 0.8rem 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #010100;
+}
+
+/* Listy i ich elementy w karcie */
+.document-card li {
+    margin-bottom: 0.7em;
+    line-height: 1.7;
+}
+
+/* Listy z podpunktami a, b, c itd. */
+.agreement-list ul {
+    list-style-type: lower-alpha;
+    margin-left: 2em;
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    padding-left: 1em;
+}
+
+/* Linki na liście (np. dodawanie nowych punktów) */
+.li-link {
+    display: block;
+    position: relative;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.li-link:hover,
+.li-link:focus {
+    border: 2px solid #f3cb3c;
+    padding-left: 22px;
+    box-shadow: 0 2px 8px rgba(243, 203, 60, 0.08);
+    color: #594600;
+}
+
+/* Ikona plusa przy linku */
+.icon-plus {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 22px;
+    height: 22px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 2;
+}
+
+.li-link:hover .icon-plus,
+.li-link:focus .icon-plus {
+    opacity: 1;
+}
+
+/* Przycisk dodawania postanowienia */
+.btn-add-postanowienie {
+    margin-top: 1em;
+    margin-left: 0.4em;
+    background: #fff;
+    color: #f3cb3c;
+    border: 2px dashed #f3cb3c;
+    border-radius: 8px;
+    font-size: 1.1em;
+    padding: 0.3em 1.3em;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-add-postanowienie:hover {
+    background: #fffbe9;
+    color: #594600;
+    border-style: solid;
+}
+
+/* Inputy tekstowe w sekcji stron */
+.card-parties input[type="text"] {
+    border: none;
+    border-bottom: 1.5px dashed #f3cb3c;
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    outline: none;
+    padding: 1px 4px;
+    margin: 0 2px;
+    width: 120px;
+}
+
+.card-parties input[type="text"]:focus {
+    border-bottom: 1.5px solid #f3cb3c;
+    background: #fffbe9;
+}
+
+/* Numer strony w karcie (np. paginacja) */
+.card-page {
+    position: absolute;
+    right: 2.2rem;
+    bottom: 1.1rem;
+    font-size: 1.1rem;
+    color: #362A00;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+/* Stylizowany select (np. na czas trwania umowy) */
+.duration-select {
+    width: auto;
+    min-width: 0;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0.2em;
+    border: none;
+    border-bottom: 1.5px dashed #f3cb3c;
+    border-radius: 0;
+    appearance: none;
+    outline: none;
+    box-shadow: none;
+    padding: 0.25em 1.2em 0.25em 0.6em;
+}
+
+.duration-select:focus {
+    border-bottom: 1.5px solid #f3cb3c;
+}
+
+/* Checkbox z pogrubieniem podpisu po zaznaczeniu */
+input[type="checkbox"]:checked+.option-text {
+    font-weight: bold;
+}
+
+/* Przycisk potwierdzający */
+.btn-confirm {  
+    margin-left: auto;
+    padding: 0.7em 2.2em;
+    border-radius: 40px;
+    background: #f3cb3c;
+    color: #fff;
+    border: none;
+    font-size: 1.12em;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm:hover {
+    background: #e1ad01;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
