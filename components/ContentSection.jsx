@@ -1,14 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { agreement } from '@/data/agreement'
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "./ui/textarea"
 
-export default function ContentSection({ activeTool, alternativeData, setAlternativeData }) {
-  const [clauses, setClauses] = useState([])
+import { klauzule } from '@/data/klauzule'
+
+export default function ContentSection({ activeTool, alternativeData, setAlternativeData ,clauses, setClauses}) {
   const [modalData, setModalData] = useState({
     type: null,
     text: '',
@@ -16,12 +17,11 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
     itemIndex: null,
     subIndex: null
   })
-
   const [isOpen, setIsOpen] = useState(false)
   const [showAltForm, setShowAltForm] = useState(false)
   const [question, setQuestion] = useState("")
   const [variants, setVariants] = useState([])
- 
+
 
   const addVariantField = () => {
     setVariants((prev) => [...prev, ""])
@@ -35,9 +35,19 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
     })
   }
 
-  useEffect(() => {
-    if (clauses.length === 0) setClauses(agreement.clauses)
-  }, [])
+  function addAlternative(newAlternative) {
+    setAlternativeData(prev => [...prev, newAlternative]);
+  }
+ useEffect(() => {
+    if (showAltForm) {
+      const seed = modalData.clauseIndex != null ? modalData.clauseIndex.toString() : ''
+      setVariants([seed])
+      setQuestion('')
+    } else {
+      setVariants([])
+    }
+  }, [showAltForm, modalData.clauseIndex])
+  
 
   const handleDelete = () => {
     const { type, clauseIndex, itemIndex, subIndex } = modalData
@@ -101,7 +111,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
         >
           <h1 className="text-xl font-semibold mb-4 flex justify-between items-center">
             {clause.title}
-           
+
           </h1>
 
           {clause.items && (
@@ -131,7 +141,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
                         ? formatClauseWithSelect(item.text, item.select)
                         : item.text}
                     </span>
-                    
+
                   </div>
 
                   {item.subpoints && (
@@ -148,7 +158,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
                           }}
                         >
                           {sub}
-                          
+
                         </li>
                       ))}
                     </ul>
@@ -160,110 +170,46 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
         </div>
       ))}
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {showAltForm
-                ? "Dodaj alternatywę"
-                : `Opcje dla ${modalData.type === "clause"
-                  ? "klauzuli"
-                  : modalData.type === "item"
-                    ? "punktu"
-                    : modalData.type === "subpoint"
-                      ? "podpunktu"
-                      : "tekstu"}`}
+              {showAltForm ? 'Dodaj alternatywę' : `Opcje dla ${modalData.type === 'clause' ? 'klauzuli' : modalData.type === 'item' ? 'punktu' : 'podpunktu'}`}
             </DialogTitle>
           </DialogHeader>
 
           {showAltForm ? (
-            <div className="flex flex-col gap-2 mt-4">
-              <Textarea
-                placeholder="Wpisz pytanie alternatywy..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
-              {variants.map((variant, index) => (
-                <Input
-                  key={index}
-                  placeholder={`Wariant ${index + 1}`}
-                  value={variant}
-                  onChange={(e) => updateVariant(index, e.target.value)}
-                />
+            <div className="flex flex-col gap-4 mt-4">
+              <Textarea placeholder="Wpisz pytanie alternatywy..." value={question} onChange={e => setQuestion(e.target.value)} />
+              {variants.map((sel,idx) => (
+                <select key={idx} className="w-full border border-gray-300 rounded p-2" value={sel} onChange={e => updateVariant(idx, e.target.value)}>
+                  <option value="" disabled>-- Wybierz klauzulę --</option>
+                  {klauzule.clauses.map((c,i) => <option key={i} value={i}>{c.title}</option>)}
+                </select>
               ))}
-              <Button size="sm" variant="outline" onClick={addVariantField}>
-                ➕ Dodaj wariant
-              </Button>
-
+              <Button size="sm" variant="outline" onClick={addVariantField}>➕ Dodaj wariant</Button>
               <div className="flex gap-2 mt-4">
                 <Button
                   variant="default"
                   onClick={() => {
-                    const newAlternative = {
-                      question,
-                      variants,
-                      targetType: modalData.type,
-                      clauseIndex: modalData.clauseIndex,
-                      itemIndex: modalData.itemIndex,
-                      subIndex: modalData.subIndex
-                    }
-                    
-                    setAlternativeData(newAlternative)
+                    const parsed = variants.filter(v => v).map(v => parseInt(v,10))
+                    if (!question || parsed.length === 0) return
+                    addAlternative({ question, variants: parsed, targetType: 'clause', clauseIndex: modalData.clauseIndex, itemIndex: modalData.itemIndex, subIndex: modalData.subIndex })
                     setShowAltForm(false)
+                    setIsOpen(false)
                   }}
-                >
-                  ✅ Zapisz alternatywę
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowAltForm(false)}
-                >
-                  ⬅️ Wróć
-                </Button>
+                >✅ Zapisz alternatywę</Button>
+                <Button variant="secondary" onClick={() => setShowAltForm(false)}>⬅️ Wróć</Button>
               </div>
             </div>
           ) : (
             <div className="flex flex-col gap-2 mt-4">
-              <Button
-                variant="default"
-                onClick={() => console.log("Edytuj tekst:", modalData.text)}
-              >
-                ✏️ Edytuj tekst
-              </Button>
-
-              {(modalData.type === "clause" || modalData.type === "item") && (
-                <>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setShowAltForm(true)
-                      setQuestion("")
-                      setVariants([])
-                    }}
-                  >
-                    ➕ Dodaj alternatywę
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => console.log("Dodaj subpunkt")}
-                  >
-                    ➕ Dodaj subpunkt
-                  </Button>
-                </>
-              )}
-
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-              >
-                🗑️ Usuń
-              </Button>
+              <Button variant="default" onClick={() => setShowAltForm(true)}>➕ Dodaj alternatywę</Button>
+              <Button variant="destructive" onClick={handleDelete}>🗑️ Usuń</Button>
             </div>
           )}
 
-          <Button className="mt-6" onClick={() => setIsOpen(false)}>
-            Zamknij
-          </Button>
+          {!showAltForm && <Button className="mt-6" onClick={() => setIsOpen(false)}>Zamknij</Button>}
         </DialogContent>
       </Dialog>
     </div>
