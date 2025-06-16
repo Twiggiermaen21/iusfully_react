@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exported Figma Design</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins|Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Gradientowe, dekoracyjne tło (rozmyte, subtelne kolory) -->
+    <div class="background-gradient"></div>
+
+    <div class="flex-header">
+        <!-- Sekcja na logo firmy po lewej stronie nagłówka -->
+        <div class="logo-container">
+            <img src="./images/logo_v5.png" alt="Logo firmy" class="logo" />
+        </div>
+        
+        <a href="/index.html" class="btn-return">Powrót</a>
+    </div>
+
+    <!-- Główny wrapper do centrowania zawartości a stronie -->
+    <div class="main-wrapper">
+        <div class="document-card">
+            <form id="umowa-form">
+                <ol class="agreement-list">
+                    <li>
+                        Świadczenie usług prawnych będzie obejmowało w szczególności:
+                        <ul>
+                            <!-- Każdy punkt poniżej to pojedyncza możliwa usługa do zaznaczenia -->
+                            <li>
+                                <label style="cursor:pointer;">
+                                    <input type="checkbox" name="usluga" value="a" style="display:none;">
+                                    <span class="option-text">bieżące doradztwo prawne,</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label style="cursor:pointer;">
+                                    <input type="checkbox" name="usluga" value="b" style="display:none;">
+                                    <span class="option-text">sporządzanie regulaminów, polityk, uchwał oraz podobnych dokumentów zgodnie z założeniami przedstawionymi przez Klienta,</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label style="cursor:pointer;">
+                                    <input type="checkbox" name="usluga" value="c" style="display:none;">
+                                    <span class="option-text">sporządzenie projektów umów zgodnie z przedstawionymi przez Klienta założeniami.</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label style="cursor:pointer;">
+                                    <input type="checkbox" name="usluga" value="d" style="display:none;">
+                                    <span class="option-text">analizę i opiniowanie projektów umów przedstawionych przez Klienta,</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label style="cursor:pointer;">
+                                    <input type="checkbox" name="usluga" value="e" style="display:none;">
+                                    <span class="option-text">reprezentowanie Klienta przed sądami powszechnymi, administracyjnymi i organami administacyjnymi</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+                <!-- Przyciski formularza (zatwierdzenie wyboru usług) -->
+                <div style="display: flex;">
+                    <button type="submit" class="btn-confirm">Zatwierdź</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    document.getElementById('umowa-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const checked = Array.from(document.querySelectorAll('input[type="checkbox"][name="usluga"]:checked'))
+            .map(cb => cb.value);
+        console.log("Zaznaczone usługi:", checked);
+    });
+</script>
+
+</html>

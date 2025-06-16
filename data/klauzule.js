@@ -20,6 +20,7 @@ export const klauzule = {
             "sporządzenie projektów umów zgodnie z przedstawionymi przez Klienta założeniami"
           ]
         },
+
         {
           text:
             "Kancelaria oświadcza, że dysponuje odpowiednimi uprawnieniami, kwalifikacjami oraz potencjałem, w szczególności kadrowym oraz organizacyjno-technicznym, a także wiedzą i doświadczeniem niezbędnymi do należytego wykonania niniejszej umowy.",

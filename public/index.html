@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exported Figma Design</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins|Inter&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- Gradientowe rozmyte tło -->
+  <div class="background-gradient"></div>
+  <!-- Wrapper główny - centrum strony -->
+  <div class="main-wrapper">
+
+    <!-- Strona 1 dokumentu (formularz do edycji danych stron i treści) -->
+    <div class="document-card">
+      <div class="card-section card-title">
+        Umowa o świadczenie usług prawnych
+      </div>
+
+      <div class="card-section card-date">
+        Warszawa,
+        <input type="date" class="date-picker" value="2024-01-15">
+      </div>
+      <!-- Strony umowy: Klient i Kancelaria, edytowalne pola tekstowe -->
+      <div class="card-section card-parties">
+        <span>zawarta pomiędzy:<br /></span>
+        <strong>
+          <input type="text" name="firma1" value="XYZ sp. z o. o." style="font-weight:700; " />
+        </strong>
+        <span>
+          z siedzibą w Katowicach przy ul.
+          <input type="text" name="ulica1" placeholder="Piękna 16">
+          , REGON
+          <input type="text" name="regon1" placeholder="XXXXXXXXX" maxlength="9">
+          , NIP
+          <input type="text" name="nip1" placeholder="XXXXXXXXXX" maxlength="10">
+          , wpisaną do rejestru przedsiębiorców prowadzonego przez Sąd Rejonowy w Katowicach Wydział Gospodarczy
+          Krajowego Rejestru Sądowego,
+          nr KRS
+          <input type="text" name="krs1" placeholder="XXXXXXXXXX" maxlength="10">
+          ,<br />
+          reprezentowaną przez:
+          <input type="text" name="reprezentant1" placeholder="Jan Kowalski">
+          <br />zwaną dalej
+        </span>
+        <strong>Klientem</strong>
+        <span>,<br />a<br /></span>
+        <strong>
+          <input type="text" name="kancelaria" value="Kancelarią ZYX" style="font-weight:700;">
+        </strong>
+        <span>
+          z siedzibą w Warszawie przy ul.
+          <input type="text" name="ulica2" placeholder="Sokolska 5">
+          , REGON
+          <input type="text" name="regon2" placeholder="XXXXXXXXX" maxlength="9">
+          , NIP
+          <input type="text" name="nip2" placeholder="XXXXXXXXXX" maxlength="10">
+          , wpisaną do rejestru przedsiębiorców prowadzonego przez Sąd Rejonowy w Warszawie Wydział Gospodarczy
+          Krajowego Rejestru Sądowego,
+          nr KRS
+          <input type="text" name="krs2" placeholder="XXXXXXXXXX" maxlength="10">
+          <br />reprezentowaną przez:
+          <input type="text" name="reprezentant2" placeholder="Jan Nowak">
+          <br />zwaną dalej
+        </span>
+        <strong>Kancelarią</strong>
+      </div>
+
+
+      <div class="card-section card-content">
+
+        <div>
+
+          <h1 class="card-heading">Przedmiot umowy</h1>
+          <ol class="agreement-list">
+
+            <!-- UWAGA: Linki w <li> jest poprawny ale nie wyglada tak dobrze jak 2 przyklad -->
+            <li>
+              <a href="scena.html" class="li-link">
+                <img src="/images/plus.svg" alt="Plus" class="icon-plus" />
+                Przedmiotem niniejszej umowy jest świadczenie usług prawnych w ramach wsparcia bieżącej obsługi
+                prawnej w sprawach związanych z działalnością Zamawiającego.
+              </a>
+            </li>
+            <!-- UWAGA: Linki wokół <li> nie są poprawną składnią HTML! To przykład z Figma/prototypu. -->
+            <a href="scena.html" class="li-link">
+              <img src="/images/plus.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Świadczenie usług prawnych będzie obejmowało w szczególności:
+                <ul>
+                  <li>bieżące doradztwo prawne,</li>
+                  <li>sporządzanie regulaminów, polityk, uchwał oraz podobnych dokumentów zgodnie z założeniami
+                    przedstawionymi przez Klienta,</li>
+                  <li>sporządzenie projektów umów zgodnie z przedstawionymi przez Klienta założeniami.</li>
+                </ul>
+              </li>
+            </a>
+
+            <!-- UWAGA: Samo <li> nie są poprawną składnią HTML! To przykład z Figma/prototypu. -->
+            <a href="scena.html" class="li-link">
+              <li>
+                <img src="/images/plus.svg" alt="Plus" class="icon-plus">
+                Kancelaria oświadcza, że dysponuje odpowiednimi uprawnieniami, kwalifikacjami oraz potencjałem, w
+                szczególności kadrowym oraz organizacyjno-technicznym, a także wiedzą i doświadczeniem niezbędnymi do
+                należytego wykonania niniejszej umowy.
+              </li>
+            </a>
+          </ol>
+        </div>
+
+        <div>
+          <!-- Czas trwania umowy (dropdown select) -->
+          <h1 class="card-heading"> Czas trwania umowy</h1>
+          <span>
+            Niniejsza umowa zostaje zawarta na
+            <select class="duration-select">
+              <option value="nieokreslony" selected>czas nieokreślony</option>
+              <option value="1rok">czas określony – 1 rok</option>
+              <option value="2lata">czas określony – 2 lata</option>
+              <option value="individ">okres indywidualnie ustalony</option>
+            </select>.
+            Pomoc prawna będzie świadczona przez Kancelarię w ramach poszczególnych zleceń, w zależności od
+            zapotrzebowania Klienta.
+          </span>
+        </div>
+
+        <div>
+          <!-- Obowiązki stron -->
+          <h1 class="card-heading">Obowiązki stron</h1>
+          <ol class="agreement-list ">
+            <a href="scena2.html" class="li-link ">
+              <img src="/images/pen.svg" alt="Plus" class="icon-plus" />
+              <li>
+                W ramach wykonywania przedmiotu Umowy, Kancelaria zobowiązuje się w szczególności do:
+                <ul>
+                  <li> świadczenia usług pomocy prawnej przy zachowaniu należytej staranności, wynikającej z wiedzy
+                    prawniczej, zasad etyki oraz zawodowego charakteru prowadzonej działalności,</li>
+                  <li>świadczenia usług pomocy prawnej we współpracy z Klientem oraz zgodnie z wymogami Klienta i
+                    wzajemnymi ustaleniami, w tym przestrzegania ustalonych terminów,</li>
+                </ul>
+              </li>
+            </a>
+            <a href="scena2.html" class="li-link">
+              <img src="/images/pen.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Kancelaria może wykonywać Umowę przy udziale osób wskazanych w Załączniku nr 1 do Umowy. Kancelaria
+                odpowiada jak za własne działanie lub zaniechanie, za działania lub zaniechania osób, przy pomocy
+                których wykonuje Umowę.
+              </li>
+            </a>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card-page">1</div>
+    </div>
+
+    <!-- Strona 2 dokumentu (sztywna wersja danych stron, bez inputów) -->
+    <div class="document-card">
+      <div class="card-section card-title">
+        Umowa o świadczenie usług prawnych
+      </div>
+      <div class="card-section card-date">
+        Warszawa,
+        <input type="date" class="date-picker" value="2024-01-15">
+      </div>
+      <div class="card-section card-parties">
+        <span>zawarta pomiędzy:<br /></span>
+        <strong>XYZ sp. z o. o.</strong>
+        <span> z siedzibą w Katowicach przy ul. Pięknej 16, REGON XX XXXXXX X, NIP XXX XXXXXX X, wpisaną do rejestru
+          przedsiębiorców prowadzonego przez Sąd Rejonowy w Katowicach Wydział Gospodarczy Krajowego Rejestru Sądowego,
+          nr KRS XXXXXXXXXX,<br />reprezentowaną przez: Jana Kowalskiego <br />zwaną dalej </span>
+        <strong>Klientem</strong>
+        <span>,<br />a<br /></span>
+        <strong>Kancelarią ZYX</strong>
+        <span> z siedzibą w Warszawie przy ul. Sokolskiej 5, REGON XX XXXXXX X, NIP XXX XXXXXX X, wpisaną do rejestru
+          przedsiębiorców prowadzonego przez Sąd Rejonowy w Warszawie Wydział Gospodarczy Krajowego Rejestru Sądowego,
+          nr KRS XXXXXXXXXX<br />reprezentowaną przez: r. pr. Jana Nowaka<br />zwaną dalej </span>
+        <strong>Kancelarią</strong>
+      </div>
+
+      <!-- Treść umowy - jak wyżej -->
+      <div class="card-section card-content">
+        <div>
+          <h1 class="card-heading">Przedmiot umowy</h1>
+          <ol class="agreement-list">
+            <a href="scena.html" class="li-link">
+              <img src="/images/plus.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Przedmiotem niniejszej umowy jest świadczenie usług prawnych w ramach wsparcia bieżącej obsługi prawnej
+                w sprawach związanych z działalnością Zamawiającego.
+              </li>
+            </a>
+            <a href="scena.html" class="li-link">
+              <img src="/images/plus.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Świadczenie usług prawnych będzie obejmowało w szczególności:
+                <ul>
+                  <li>bieżące doradztwo prawne,</li>
+                  <li>sporządzanie regulaminów, polityk, uchwał oraz podobnych dokumentów zgodnie z założeniami
+                    przedstawionymi przez Klienta,</li>
+                  <li>sporządzenie projektów umów zgodnie z przedstawionymi przez Klienta założeniami.</li>
+                </ul>
+              </li>
+            </a>
+            <a href="scena.html" class="li-link">
+              <img src="/images/plus.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Kancelaria oświadcza, że dysponuje odpowiednimi uprawnieniami, kwalifikacjami oraz potencjałem, w
+                szczególności kadrowym oraz organizacyjno-technicznym, a także wiedzą i doświadczeniem niezbędnymi do
+                należytego wykonania niniejszej umowy.
+              </li>
+            </a>
+          </ol>
+        </div>
+
+        <div>
+          <h1 class="card-heading"> Czas trwania umowy</h1>
+          <span>
+            Niniejsza umowa zostaje zawarta na
+            <select class="duration-select">
+              <option value="nieokreslony" selected>czas nieokreślony</option>
+              <option value="1rok">czas określony – 1 rok</option>
+              <option value="2lata">czas określony – 2 lata</option>
+              <option value="individ">okres indywidualnie ustalony</option>
+            </select>.
+            Pomoc prawna będzie świadczona przez Kancelarię w ramach poszczególnych zleceń, w zależności od
+            zapotrzebowania Klienta.
+          </span>
+        </div>
+
+        <div>
+          <h1 class="card-heading">Obowiązki stron</h1>
+          <ol class="agreement-list ">
+            <!-- UWAGA: Linki wokół <li> nie są poprawną składnią HTML! To przykład z Figma/prototypu. -->
+            <a href="scena2.html" class="li-link ">
+              <img src="/images/pen.svg" alt="Plus" class="icon-plus" />
+              <li>
+                W ramach wykonywania przedmiotu Umowy, Kancelaria zobowiązuje się w szczególności do:
+                <ul>
+                  <li> świadczenia usług pomocy prawnej przy zachowaniu należytej staranności, wynikającej z wiedzy
+                    prawniczej, zasad etyki oraz zawodowego charakteru prowadzonej działalności,</li>
+                  <li>świadczenia usług pomocy prawnej we współpracy z Klientem oraz zgodnie z wymogami Klienta i
+                    wzajemnymi ustaleniami, w tym przestrzegania ustalonych terminów,</li>
+                </ul>
+              </li>
+            </a>
+            <a href="scena2.html" class="li-link">
+              <img src="/images/pen.svg" alt="Plus" class="icon-plus" />
+              <li>
+                Kancelaria może wykonywać Umowę przy udziale osób wskazanych w Załączniku nr 1 do Umowy. Kancelaria
+                odpowiada jak za własne działanie lub zaniechanie, za działania lub zaniechania osób, przy pomocy
+                których wykonuje Umowę.
+              </li>
+            </a>
+          </ol>
+        </div>
+      </div>
+      <!-- Numer strony -->
+      <div class="card-page">1</div>
+    </div>
+  </div>
+</body>
+
+</html>
