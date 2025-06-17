@@ -39,7 +39,6 @@ export default function AlternativeDialog({
         }
   })
 
-
   const addProvision = (newObj) => {
    
     const myNewItem = { text: newObj };
