@@ -12,7 +12,7 @@ export default function AlternativeDialog({
   handleDelete,
   addBinding,
   selectBinding,
-  addProvision
+  
 }) {
   const [mode, setMode] = useState('options') // 'options' | 'alternative' | 'provision' | 'points'
   const [question, setQuestion] = useState('')
@@ -25,11 +25,7 @@ export default function AlternativeDialog({
 
 
   function filterClauseItemsBySelectedPoints(selectedPoints) {
-    // pobieramy oryginalne items z pliku
-    console.log('dsds',clauses[modalData.clauseIndex].items)
-    // const originalItems = clauses.items
-    // console.log(originalItems)
-    // zostawiamy tylko te indeksy, które są w selectedPoints
+ 
     const filtered = clauses[modalData.clauseIndex].items.filter((_, idx) => selectedPoints.includes(idx))
     // zapisujemy do clauses – mutujemy tylko tę jedną klauzulę
     clauses[ modalData.clauseIndex].items = filtered
@@ -39,10 +35,16 @@ export default function AlternativeDialog({
     if (modalData.clauseIndex != null) {
       const freshOriginal = klauzule.clauses[modalData.clauseIndex]
       setOriginalClauseObj(freshOriginal)   
-         console.log(klauzule.clauses[modalData.clauseIndex])
+ 
         }
   })
 
+
+  const addProvision = (newObj) => {
+   
+    const myNewItem = { text: newObj };
+    clauses[modalData.clauseIndex].items.push(myNewItem )
+  }
 
   const addVariantField = () => setVariants(prev => [...prev, ''])
   const updateVariant = (i, v) => setVariants(prev => prev.map((x, idx) => idx === i ? v : x))
@@ -61,10 +63,13 @@ export default function AlternativeDialog({
   const onSaveProvision = () => {
     if (selectedItem === null) return
     provisionList.forEach(text => {
-      if (text) addProvision({ clauseIndex: modalData.clauseIndex, itemIndex: selectedItem, provisionText: text })
+      if (text) addProvision(provisionList)
     })
     setMode('options')
     setIsOpen(false)
+  setProvisionList([])
+    console.log(provisionList) 
+  
   }
 
   const renderOptions = () => (
@@ -95,12 +100,12 @@ export default function AlternativeDialog({
   )
 
   const renderProvisionForm = () => {
-    if (!clauseObj) return null
+    if (!originalClauseObj) return null
     return (
       <div className="flex flex-col gap-4 mt-4">
-        <h2 className="text-lg font-semibold">{clauseObj.title}</h2>
+        <h2 className="text-lg font-semibold">{originalClauseObj.title}</h2>
         <ol className="list-decimal list-inside ml-4">
-          {clauseObj.items.map((item, idx) => (
+          {originalClauseObj.items.map((item, idx) => (
             <li
               key={idx}
               className="mb-2 p-2 cursor-pointer"
