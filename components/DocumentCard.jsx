@@ -77,6 +77,7 @@ export default function DocumentCard() {
           alternativeData={alternativeData}
           setAlternativeData={setAlternativeData}
           clauses={clauses}
+          setClauses={setClauses}
           onVariantSelect={handleVariantSelect}
         />
       </div>
