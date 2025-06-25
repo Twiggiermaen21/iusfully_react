@@ -12,7 +12,7 @@ export default function AlternativeDialog({
   handleDelete,
   addBinding,
   selectBinding,
-  
+
 }) {
   const [mode, setMode] = useState('options') // 'options' | 'alternative' | 'provision' | 'points'
   const [question, setQuestion] = useState('')
@@ -25,24 +25,24 @@ export default function AlternativeDialog({
 
 
   function filterClauseItemsBySelectedPoints(selectedPoints) {
- 
+
     const filtered = clauses[modalData.clauseIndex].items.filter((_, idx) => selectedPoints.includes(idx))
     // zapisujemy do clauses – mutujemy tylko tę jedną klauzulę
-    clauses[ modalData.clauseIndex].items = filtered
+    clauses[modalData.clauseIndex].items = filtered
   }
 
   useEffect(() => {
     if (modalData.clauseIndex != null) {
       const freshOriginal = klauzule.clauses[modalData.clauseIndex]
-      setOriginalClauseObj(freshOriginal)   
- 
-        }
+      setOriginalClauseObj(freshOriginal)
+
+    }
   })
 
   const addProvision = (newObj) => {
-   
+
     const myNewItem = { text: newObj };
-    clauses[modalData.clauseIndex].items.push(myNewItem )
+    clauses[modalData.clauseIndex].items.push(myNewItem)
   }
 
   const addVariantField = () => setVariants(prev => [...prev, ''])
@@ -58,6 +58,13 @@ export default function AlternativeDialog({
     setMode('options')
     setIsOpen(false)
   }
+  const onSaveBinding = () => {
+      const parsed = variants.filter(x => x).map(x => parseInt(x, 10))
+     addAlternative({ question: "powiazanie!!", variants: parsed, ...modalData })
+    setMode('options')
+    setIsOpen(false)
+
+  }
 
   const onSaveProvision = () => {
     if (selectedItem === null) return
@@ -66,15 +73,15 @@ export default function AlternativeDialog({
     })
     setMode('options')
     setIsOpen(false)
-  setProvisionList([])
-    console.log(provisionList) 
-  
+    setProvisionList([])
+    console.log(provisionList)
+
   }
 
   const renderOptions = () => (
     <div className="flex flex-col gap-2 mt-4">
       <Button variant="default" onClick={() => setMode('alternative')}>➕ Dodaj alternatywę</Button>
-      <Button variant="outline" size="sm" onClick={addBinding}>🔗 Dodaj powiązania</Button>
+      <Button variant="outline" size="sm" onClick={() => setMode('binding')}>🔗 Dodaj powiązania</Button>
       <Button variant="outline" size="sm" onClick={() => setMode('points')}>📌 Wybierz punkty</Button>
       <Button variant="outline" size="sm" onClick={() => setMode('provision')}>➕ Dodaj postanowienie</Button>
       <Button variant="destructive" onClick={handleDelete}>🗑️ Usuń</Button>
@@ -97,6 +104,27 @@ export default function AlternativeDialog({
       </div>
     </div>
   )
+
+  const renderBindingView = () => (
+    <div className="flex flex-col gap-4 mt-4">
+
+
+      <select className="w-full border rounded p-2"
+       value={variants[0]} onChange={e => updateVariant(0, e.target.value)}
+      >
+        <option value="" disabled>-- Wybierz klauzulę --</option>
+        {klauzule.clauses.map((c, ci) => <option key={ci} value={ci}>{c.title}</option>)}
+      </select>
+
+
+      <div className="flex gap-2 mt-4">
+        <Button variant="default" onClick={onSaveBinding}>✅ Zapisz powiazanie</Button>
+        <Button variant="secondary" onClick={() => setMode('options')}>⬅️ Wróć</Button>
+      </div>
+    </div>
+  )
+
+
 
   const renderProvisionForm = () => {
     if (!originalClauseObj) return null
@@ -142,8 +170,8 @@ export default function AlternativeDialog({
 
   const renderPointsView = () => {
     if (!originalClauseObj) return null
- 
-    
+
+
     return (
       <div className="flex flex-col gap-4 mt-4">
         <h2 className="text-lg font-semibold">{originalClauseObj.title}</h2>
@@ -205,7 +233,9 @@ export default function AlternativeDialog({
             ? renderProvisionForm()
             : mode === 'points'
               ? renderPointsView()
-              : renderOptions()}
+              : mode === 'binding'
+                ? renderBindingView()
+                : renderOptions()}
 
         {mode === 'options' && (
           <Button className="mt-6" onClick={() => setIsOpen(false)}>Zamknij</Button>
