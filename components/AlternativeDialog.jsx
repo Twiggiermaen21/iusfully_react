@@ -8,11 +8,9 @@ export default function AlternativeDialog({
   modalData,
   klauzule,
   clauses,
+  setClauses,
   addAlternative,
   handleDelete,
-  addBinding,
-  selectBinding,
-
 }) {
   const [mode, setMode] = useState('options') // 'options' | 'alternative' | 'provision' | 'points'
   const [question, setQuestion] = useState('')
@@ -20,24 +18,24 @@ export default function AlternativeDialog({
   const [selectedItem, setSelectedItem] = useState(null)
   const [provisionList, setProvisionList] = useState([])
   const [selectedPoints, setSelectedPoints] = useState([])
-
   const [originalClauseObj, setOriginalClauseObj] = useState(null)
 
+ function filterClauseItemsBySelectedPoints(selectedPoints) {
 
-  function filterClauseItemsBySelectedPoints(selectedPoints) {
+  const originalItems = klauzule.clauses[modalData.clauseIndex].items;
+  const filtered = originalItems.filter((_, idx) => selectedPoints.includes(idx));
+  const updatedClause = {
+    ...clauses[modalData.clauseIndex],
+    items: filtered,
+  };
 
-    const filtered = clauses[modalData.clauseIndex].items.filter((_, idx) => selectedPoints.includes(idx))
-    // zapisujemy do clauses – mutujemy tylko tę jedną klauzulę
-    clauses[modalData.clauseIndex].items = filtered
-  }
+  const updatedClauses = [...clauses];
+  updatedClauses[modalData.clauseIndex] = updatedClause;
 
-  useEffect(() => {
-    if (modalData.clauseIndex != null) {
-      const freshOriginal = klauzule.clauses[modalData.clauseIndex]
-      setOriginalClauseObj(freshOriginal)
+  setClauses(updatedClauses);
+}
 
-    }
-  })
+
 
   const addProvision = (newObj) => {
 
@@ -54,17 +52,28 @@ export default function AlternativeDialog({
   const onSaveAlternative = () => {
     const parsed = variants.filter(x => x).map(x => parseInt(x, 10))
     if (!question || parsed.length === 0) return
-    addAlternative({ question, variants: parsed, ...modalData })
+    addAlternative({ typ: 'alt', question, variants: parsed, ...modalData })
     setMode('options')
+    setVariants([])
+    setQuestion('')
     setIsOpen(false)
   }
   const onSaveBinding = () => {
-      const parsed = variants.filter(x => x).map(x => parseInt(x, 10))
-     addAlternative({ question: "powiazanie!!", variants: parsed, ...modalData })
-    setMode('options')
-    setIsOpen(false)
+    const selectedVariantIndex = variants[0];
+    if (selectedVariantIndex === '' || isNaN(parseInt(selectedVariantIndex))) return;
 
-  }
+    addAlternative({
+      typ: 'pow',
+      question: "powiązanie!",
+      variants: [parseInt(selectedVariantIndex, 10)],
+      selectedVariantIndex,
+      ...modalData,
+    });
+
+    setMode('options');
+    setVariants([]);
+    setIsOpen(false);
+  };
 
   const onSaveProvision = () => {
     if (selectedItem === null) return
@@ -74,16 +83,31 @@ export default function AlternativeDialog({
     setMode('options')
     setIsOpen(false)
     setProvisionList([])
-    console.log(provisionList)
+    // console.log(provisionList)
 
   }
-
+  // console.  log(klauzule.clauses[modalData.clauseIndex])
   const renderOptions = () => (
     <div className="flex flex-col gap-2 mt-4">
       <Button variant="default" onClick={() => setMode('alternative')}>➕ Dodaj alternatywę</Button>
-      <Button variant="outline" size="sm" onClick={() => setMode('binding')}>🔗 Dodaj powiązania</Button>
-      <Button variant="outline" size="sm" onClick={() => setMode('points')}>📌 Wybierz punkty</Button>
-      <Button variant="outline" size="sm" onClick={() => setMode('provision')}>➕ Dodaj postanowienie</Button>
+      <Button variant="outline" size="sm" onClick={() => { setMode('binding'); setVariants(['']); }}>🔗 Dodaj powiązania</Button>
+      <Button variant="outline" size="sm" onClick={() => {
+        setMode('points')
+
+        const freshOriginal = klauzule.clauses.find(clause => clause.title === modalData.text);
+setOriginalClauseObj(freshOriginal);
+  console.log('wybierz punkty',klauzule.clauses)
+
+      }}>📌 Wybierz punkty</Button>
+      <Button variant="outline" size="sm" onClick={() => {
+        setMode('provision')
+        
+        const freshOriginal = clauses[modalData.clauseIndex];
+        setOriginalClauseObj(freshOriginal);
+
+
+
+      }}>➕ Dodaj postanowienie</Button>
       <Button variant="destructive" onClick={handleDelete}>🗑️ Usuń</Button>
     </div>
   )
@@ -107,24 +131,23 @@ export default function AlternativeDialog({
 
   const renderBindingView = () => (
     <div className="flex flex-col gap-4 mt-4">
-
-
-      <select className="w-full border rounded p-2"
-       value={variants[0]} onChange={e => updateVariant(0, e.target.value)}
+      <select
+        className="w-full border rounded p-2"
+        value={variants[0] ?? ''}
+        onChange={e => updateVariant(0, e.target.value)} // poprawny indeks!
       >
         <option value="" disabled>-- Wybierz klauzulę --</option>
-        {klauzule.clauses.map((c, ci) => <option key={ci} value={ci}>{c.title}</option>)}
+        {clauses.map((c, ci) => (
+          <option key={ci} value={ci}>{c.title}</option>
+        ))}
       </select>
 
-
       <div className="flex gap-2 mt-4">
-        <Button variant="default" onClick={onSaveBinding}>✅ Zapisz powiazanie</Button>
+        <Button variant="default" onClick={onSaveBinding}>✅ Zapisz powiązanie</Button>
         <Button variant="secondary" onClick={() => setMode('options')}>⬅️ Wróć</Button>
       </div>
     </div>
   )
-
-
 
   const renderProvisionForm = () => {
     if (!originalClauseObj) return null

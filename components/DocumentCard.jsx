@@ -24,15 +24,9 @@ function mergeClauses(clauses, alternativeData) {
 
 export default function DocumentCard() {
   const [activeTool, setActiveTool] = useState(null)
-  const [alternativeData, setAlternativeData] = useState(
-    // przykład struktury: [{ clauseIndex: 1, variants: [2,3], selectedVariantIndex: null }]
-    []
-  )
-  const [clauses, setClauses] = useState(
-    mergeClauses(klauzule.clauses, [])
-  )
+  const [alternativeData, setAlternativeData] = useState([])
+  const [clauses, setClauses] = useState( mergeClauses(klauzule.clauses, []))
 
-  // Za każdym razem gdy zmienią się alternativeData, przeliczamy clauses
   useEffect(() => {
     setClauses(mergeClauses(klauzule.clauses, alternativeData))
   }, [alternativeData])
@@ -56,81 +50,110 @@ export default function DocumentCard() {
 
       return newAlt
     })
-
-    console.log(`Zaktualizowano alt dla klauzuli ${idx}, wariant ${variantIdx}`)
   }
-
   return (
     <div className="flex w-full">
-      {/* Sidebar */}
-      <div className="w-1/5 border-r border-gray-200 bg-white">
-        <SidebarProvider>
-          <AppSidebar activeTool={activeTool} setActiveTool={setActiveTool} />
-          <SidebarTrigger />
-        </SidebarProvider>
-      </div>
+    {/* Sidebar */}
+    <div className="w-1/5 border-r border-gray-200 bg-white">
+      <SidebarProvider>
+        <AppSidebar activeTool={activeTool} setActiveTool={setActiveTool} />
+        <SidebarTrigger />
+      </SidebarProvider>
+    </div>
 
-      {/* Główna zawartość */}
-      <div className="document-card w-3/5 p-6 overflow-auto">
-        <ContentSection
-          activeTool={activeTool}
-          alternativeData={alternativeData}
-          setAlternativeData={setAlternativeData}
-          clauses={clauses}
-          setClauses={setClauses}
-          onVariantSelect={handleVariantSelect}
-        />
-      </div>
+    {/* Główna zawartość */}
+    <div className="document-card w-3/5 p-6 overflow-auto">
+      <ContentSection
+        activeTool={activeTool}
+        alternativeData={alternativeData}
+        setAlternativeData={setAlternativeData}
+        clauses={clauses}
+        setClauses={setClauses}
+        onVariantSelect={handleVariantSelect}
+      />
+    </div>
 
-      {/* Panel alternatyw */}
-      <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
-        <h2 className="text-lg font-semibold mb-4">Alternatywy</h2>
-        <div className="text-sm text-black space-y-4">
-          {alternativeData.length > 0 ? (
-            alternativeData.map((alt, idx) => (
-              <div key={idx} className="space-y-3 border-t pt-3">
-                <p>
-                  <strong>Klauzula bazowa:</strong> {alt.clauseIndex}
-                </p>
-                <label
-                  htmlFor={`variant-select-${alt.clauseIndex}`}
-                  className="block mb-1 font-medium"
-                >
-                  Wybierz wariant:
-                </label>
-                <select
-                  id={`variant-select-${alt.clauseIndex}`}
-                  className="w-full border border-gray-300 rounded p-2"
-                  value={alt.selectedVariantIndex ?? ""}
-                  onChange={e =>
-                    handleVariantSelect(
-                      alt.clauseIndex,
-                      Number(e.target.value)
-                    )
-                  }
-                >
-                  <option value="" disabled>
-                    -wybierz alternatywe-
-                  </option>
-                  {alt.variants && alt.variants.length > 0 ? (
-                    alt.variants.map((variantIdx, vIdx) => (
-                      <option key={vIdx} value={variantIdx}>
-                        {klauzule.clauses[variantIdx].title}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Brak wariantów
-                    </option>
-                  )}
-                </select>
-              </div>
-            ))
-          ) : (
-            <p>Brak zapisanych alternatyw.</p>
-          )}
+    {/* Panel alternatyw */}
+    <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
+      <h2 className="text-lg font-semibold mb-4">Opcje w Umowie</h2>
+      <div className="text-sm text-black space-y-4">
+     {alternativeData.length > 0 ? (
+  alternativeData.map((alt, idx) => {
+    const isAlt = alt.typ === 'alt';
+    const isPow = alt.typ === 'pow';
+    const targetClauseIndex = alt.selectedVariantIndex;
+   
+    const targetClauseTitle = klauzule.clauses[targetClauseIndex]?.title || `Klauzula ${targetClauseIndex + 1}`;
+    const targetHref = `#clause-${targetClauseIndex}`;
+  console.log(targetHref )
+    return (
+      <div
+        key={idx}
+        className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
+      >
+        <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <p className="text-sm text-gray-500 uppercase tracking-wide">
+            {isAlt ? 'Alternatywa' : 'Powiązanie'}
+          </p>
+          <p className="text-lg font-semibold text-gray-800">
+            {isAlt
+              ? `Pytanie ${alt.clauseIndex + 1}: ${alt.question}`
+              : `Powiązanie klauzuli ${alt.clauseIndex + 1}`}
+          </p>
         </div>
+
+        {isAlt ? (
+          <div>
+            <label
+              htmlFor={`variant-select-${alt.clauseIndex}`}
+              className="block mb-2 font-medium text-gray-700"
+            >
+              Wybierz alternatywę:
+            </label>
+
+            <select
+              id={`variant-select-${alt.clauseIndex}`}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={alt.selectedVariantIndex ?? ""}
+              onChange={e =>
+                handleVariantSelect(alt.clauseIndex, Number(e.target.value))
+              }
+            >
+              <option value="" disabled>
+                - wybierz alternatywę -
+              </option>
+
+              {alt.variants && alt.variants.length > 0 ? (
+                alt.variants.map((variantIdx, vIdx) => (
+                  <option key={vIdx} value={variantIdx}>
+                    {klauzule.clauses[variantIdx]?.title || `Klauzula ${variantIdx + 1}`}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Brak opcji
+                </option>
+              )}
+            </select>
+          </div>
+        ) : (
+          <div className="mt-2 text-blue-600 hover:underline cursor-pointer">
+            {targetClauseIndex !== 'null' ? (
+              <a href={targetHref}>
+                {targetClauseTitle}
+              </a>
+            ) : (
+              <span className="text-gray-500">Brak wybranej klauzuli</span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  })
+) : (
+  <p className="text-gray-500">Brak zapisanych alternatyw.</p>
+)}
       </div>
     </div>
-  )
-}
+  </div>
+)}

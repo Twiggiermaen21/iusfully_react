@@ -13,18 +13,14 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
   }
 
   const addAlternative = (newAlt) => setAlternativeData(prev => [...prev, newAlt])
-  const addBinding =() => {
-
-
-    
-  }
-
-
+ 
 
   return (
     <div className="space-y-10">
       <ClauseList
         clauses={clauses}
+        setClauses={setClauses}
+        klauzule = {klauzule}
         activeTool={activeTool}
         onOpenModal={openModal}
       />
@@ -35,8 +31,8 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
         modalData={modalData}
         klauzule={klauzule}
         clauses={clauses}
+        setClauses = {setClauses}
         addAlternative={addAlternative}
-        addBinding={addBinding}
         handleDelete={() => {
           // deletion logic moved here
           const { type, clauseIndex, itemIndex, subIndex } = modalData

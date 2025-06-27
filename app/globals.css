@@ -74,6 +74,7 @@ body {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     background: #fff;
+    scroll-behavior: smooth;
 }
 
 /* Gradientowe, rozmyte tło na całą stronę */
