@@ -25,7 +25,11 @@ function mergeClauses(clauses, alternativeData) {
 export default function DocumentCard() {
   const [activeTool, setActiveTool] = useState(null)
   const [alternativeData, setAlternativeData] = useState([])
+  const [bindingData,setBindingData] = useState([])
   const [clauses, setClauses] = useState( mergeClauses(klauzule.clauses, []))
+
+  console.log(alternativeData)
+  console.log(bindingData)
 
   useEffect(() => {
     setClauses(mergeClauses(klauzule.clauses, alternativeData))
@@ -67,11 +71,14 @@ export default function DocumentCard() {
         activeTool={activeTool}
         alternativeData={alternativeData}
         setAlternativeData={setAlternativeData}
+        setBindingData={setBindingData}
         clauses={clauses}
         setClauses={setClauses}
         onVariantSelect={handleVariantSelect}
       />
     </div>
+
+
 
     {/* Panel alternatyw */}
     <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
@@ -79,80 +86,97 @@ export default function DocumentCard() {
       <div className="text-sm text-black space-y-4">
      {alternativeData.length > 0 ? (
   alternativeData.map((alt, idx) => {
-    const isAlt = alt.typ === 'alt';
-    const isPow = alt.typ === 'pow';
-    const targetClauseIndex = alt.selectedVariantIndex;
-   
-    const targetClauseTitle = klauzule.clauses[targetClauseIndex]?.title || `Klauzula ${targetClauseIndex + 1}`;
-    const targetHref = `#clause-${targetClauseIndex}`;
-  console.log(targetHref )
-    return (
-      <div
-        key={idx}
-        className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
-      >
-        <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-          <p className="text-sm text-gray-500 uppercase tracking-wide">
-            {isAlt ? 'Alternatywa' : 'Powiązanie'}
-          </p>
-          <p className="text-lg font-semibold text-gray-800">
-            {isAlt
-              ? `Pytanie ${alt.clauseIndex + 1}: ${alt.question}`
-              : `Powiązanie klauzuli ${alt.clauseIndex + 1}`}
-          </p>
-        </div>
+     return (
+          <div
+            key={idx}
+            className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
+          >
+            <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-sm text-gray-500 uppercase tracking-wide">
+                Alternatywa
+              </p>
+              <p className="text-lg font-semibold text-gray-800">
+                Pytanie {alt.clauseIndex + 1}: {alt.question}
+              </p>
+            </div>
 
-        {isAlt ? (
-          <div>
-            <label
-              htmlFor={`variant-select-${alt.clauseIndex}`}
-              className="block mb-2 font-medium text-gray-700"
-            >
-              Wybierz alternatywę:
-            </label>
+            <div>
+              <label
+                htmlFor={`variant-select-${alt.clauseIndex}`}
+                className="block mb-2 font-medium text-gray-700"
+              >
+                Wybierz alternatywę:
+              </label>
 
-            <select
-              id={`variant-select-${alt.clauseIndex}`}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={alt.selectedVariantIndex ?? ""}
-              onChange={e =>
-                handleVariantSelect(alt.clauseIndex, Number(e.target.value))
-              }
-            >
-              <option value="" disabled>
-                - wybierz alternatywę -
-              </option>
-
-              {alt.variants && alt.variants.length > 0 ? (
-                alt.variants.map((variantIdx, vIdx) => (
-                  <option key={vIdx} value={variantIdx}>
-                    {klauzule.clauses[variantIdx]?.title || `Klauzula ${variantIdx + 1}`}
-                  </option>
-                ))
-              ) : (
+              <select
+                id={`variant-select-${alt.clauseIndex}`}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={alt.selectedVariantIndex ?? ""}
+                onChange={e =>
+                  handleVariantSelect(alt.clauseIndex, Number(e.target.value))
+                }
+              >
                 <option value="" disabled>
-                  Brak opcji
+                  - wybierz alternatywę -
                 </option>
-              )}
-            </select>
+                {alt.variants && alt.variants.length > 0 ? (
+                  alt.variants.map((variantIdx, vIdx) => (
+                    <option key={vIdx} value={variantIdx}>
+                      {klauzule.clauses[variantIdx]?.title ||
+                        `Klauzula ${variantIdx + 1}`}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Brak opcji
+                  </option>
+                )}
+              </select>
+            </div>
           </div>
-        ) : (
-          <div className="mt-2 text-blue-600 hover:underline cursor-pointer">
-            {targetClauseIndex !== 'null' ? (
-              <a href={targetHref}>
-                {targetClauseTitle}
-              </a>
-            ) : (
-              <span className="text-gray-500">Brak wybranej klauzuli</span>
-            )}
-          </div>
-        )}
-      </div>
-    );
+
+          
+        );
+        
   })
 ) : (
   <p className="text-gray-500">Brak zapisanych alternatyw.</p>
 )}
+
+
+    {bindingData.map((bind, idx) => {
+    const targetClauseIndex = bind.selectedVariantIndex;
+   
+    const targetClauseTitle = klauzule.clauses[targetClauseIndex]?.title || `Klauzula ${targetClauseIndex + 1}`;
+    const targetHref = `#clause-${targetClauseIndex}`;
+  console.log(targetHref )
+        return (
+          <div
+            key={idx}
+            className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
+          >
+            <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-sm text-gray-500 uppercase tracking-wide">
+                Powiązanie
+              </p>
+              <p className="text-lg font-semibold text-gray-800">
+                Powiązanie klauzuli {bind.clauseIndex + 1}
+              </p>
+            </div>
+
+            <div className="mt-2 text-blue-600 hover:underline cursor-pointer">
+              {targetClauseIndex != null ? (
+                <a href={targetHref}>{targetClauseTitle}</a>
+              ) : (
+                <span className="text-gray-500">Brak wybranej klauzuli</span>
+              )}
+            </div>
+          </div>
+        );
+      })}
+   
+  
+
       </div>
     </div>
   </div>

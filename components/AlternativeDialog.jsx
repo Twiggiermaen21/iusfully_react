@@ -10,6 +10,7 @@ export default function AlternativeDialog({
   clauses,
   setClauses,
   addAlternative,
+  addBinding,
   handleDelete,
 }) {
   const [mode, setMode] = useState('options') // 'options' | 'alternative' | 'provision' | 'points'
@@ -52,7 +53,7 @@ export default function AlternativeDialog({
   const onSaveAlternative = () => {
     const parsed = variants.filter(x => x).map(x => parseInt(x, 10))
     if (!question || parsed.length === 0) return
-    addAlternative({ typ: 'alt', question, variants: parsed, ...modalData })
+    addAlternative({ question, variants: parsed, ...modalData })
     setMode('options')
     setVariants([])
     setQuestion('')
@@ -62,9 +63,7 @@ export default function AlternativeDialog({
     const selectedVariantIndex = variants[0];
     if (selectedVariantIndex === '' || isNaN(parseInt(selectedVariantIndex))) return;
 
-    addAlternative({
-      typ: 'pow',
-      question: "powiązanie!",
+    addBinding({
       variants: [parseInt(selectedVariantIndex, 10)],
       selectedVariantIndex,
       ...modalData,
@@ -83,10 +82,7 @@ export default function AlternativeDialog({
     setMode('options')
     setIsOpen(false)
     setProvisionList([])
-    // console.log(provisionList)
-
   }
-  // console.  log(klauzule.clauses[modalData.clauseIndex])
   const renderOptions = () => (
     <div className="flex flex-col gap-2 mt-4">
       <Button variant="default" onClick={() => setMode('alternative')}>➕ Dodaj alternatywę</Button>

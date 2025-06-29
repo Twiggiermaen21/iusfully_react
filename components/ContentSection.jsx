@@ -3,7 +3,7 @@ import ClauseList from './ClauseList'
 import AlternativeDialog from './AlternativeDialog'
 import { klauzule } from '@/data/klauzule'
 
-export default function ContentSection({ activeTool, alternativeData, setAlternativeData, clauses, setClauses }) {
+export default function ContentSection({ activeTool, alternativeData, setAlternativeData,setBindingData, clauses, setClauses }) {
   const [modalData, setModalData] = useState({ type: null, text: '', clauseIndex: null, itemIndex: null, subIndex: null })
   const [isOpen, setIsOpen] = useState(false)
 
@@ -13,7 +13,9 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
   }
 
   const addAlternative = (newAlt) => setAlternativeData(prev => [...prev, newAlt])
- 
+  const addBinding=(newBind) =>  setBindingData(prev =>[...prev,newBind])
+
+  
 
   return (
     <div className="space-y-10">
@@ -33,6 +35,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
         clauses={clauses}
         setClauses = {setClauses}
         addAlternative={addAlternative}
+        addBinding ={addBinding}
         handleDelete={() => {
           // deletion logic moved here
           const { type, clauseIndex, itemIndex, subIndex } = modalData

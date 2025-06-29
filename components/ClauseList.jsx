@@ -1,165 +1,211 @@
-import React, { useState } from 'react'
-import formatClauseWithSelect from '@/utils/formatClauseWithSelect'
+"use client";
+import React, { useState } from "react";
+import formatClauseWithSelect from "@/utils/formatClauseWithSelect";
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core'
+} from "@dnd-kit/core";
 import {
   SortableContext,
   useSortable,
   arrayMove,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useId } from "react";
 
- function SortableClause({ clause, index, activeTool, onOpenModal }) {
+function SortableClause({ clause, index, activeTool, onOpenModal }) {
+  // Generujemy stabilne ID, takie samo na serwerze i w kliencie
+  const describedById = useId();
+
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
-    transition
-  } = useSortable({ id: `clause-${index}` })
+    transition,
+    isDragging,
+  } = useSortable({
+    id: `clause-${index}`,
+    transition: {
+      duration: 650,
+      easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+    },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  }
+    // Jeśli chcesz przygaszać podczas przeciągania:
+    // opacity: isDragging ? 0.5 : undefined,
+  };
 
   return (
-    <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      style={style}
-      className="rounded-lg p-4 mb-4 bg-white shadow cursor-grab"
-    >
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-xl font-semibold">{clause.title}</h1>
-        {activeTool === 'clauses' && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onOpenModal({ type: 'clause', text: clause.title, clauseIndex: index })
-              console.log('clasusla', {clause, clauseIndex: index})  
-            }}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            ✏️ Edytuj
-          </button>
-        )}
-      </div>
+    <>
+      {/* Ukrywamy sekcję live-region z naszym deterministycznym ID */}
+      <div
+        id={describedById}
+        aria-live="assertive"
+        style={{ position: "absolute", left: -9999, top: 0 }}
+      />
 
-      <ol className="list-decimal pl-6 space-y-4 text-gray-800">
-        {clause.items?.map((item, ii) => (
-          <li
-            key={ii}
-            className={`p-3 rounded-lg ${activeTool === 'items' ? 'hover:bg-blue-50 cursor-pointer transition' : ''}`}
-            onClick={(e) => {
-              if (activeTool === 'items') {
-                e.stopPropagation()
-                onOpenModal({ type: 'item', text: item.text, clauseIndex: index, itemIndex: ii })
-              }
-            }}
-          >
-            <div className="flex justify-between items-start">
-              <span
-                onClick={(e) => {
-                  if (activeTool === 'text') {
-                    e.stopPropagation()
-                    onOpenModal({
-                      type: 'subpoint',
-                      text: item.text,
-                      clauseIndex: index,
-                      itemIndex: ii,
-                      subIndex: ii
-                    })
-                  }
-                }}
-                className={activeTool === 'text' ? 'hover:underline cursor-pointer transition' : ''}
-              >
-                {item.select
-                  ? formatClauseWithSelect(item.text, item.select)
-                  : item.text}
-              </span>
-            </div>
+      {/* Główny kontener z nadpisanym aria-describedby */}
+      <div
+      id={clause.id}
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        aria-describedby={describedById}
+        style={style}
+        className="rounded-lg p-4 mb-4 bg-white shadow cursor-grab"
+      >
+        <div className="flex justify-between items-center mb-2">
+          <h1 className="text-xl font-semibold">{clause.title}</h1>
+          {activeTool === "clauses" && (
+            <button
+            onPointerDown={e => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenModal({
+                  type: "clause",
+                  text: clause.title,
+                  clauseIndex: index,
+                });
+              }}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              ✏️ Edytuj
+            </button>
+          )}
+        </div>
 
-            <ul className="list-[lower-alpha] list-inside pl-4 mt-2 text-sm text-gray-700 space-y-1">
-              {item.subpoints?.map((sub, si) => (
-                <li
-                  key={si}
+        <ol className="list-decimal pl-6 space-y-4 text-gray-800">
+          {clause.items?.map((item, ii) => (
+            <li
+              key={ii}
+              className={`p-3 rounded-lg ${
+                activeTool === "items"
+                  ? "hover:bg-blue-50 cursor-pointer transition"
+                  : ""
+              }`}
+              onClick={(e) => {
+                if (activeTool === "items") {
+                  e.stopPropagation();
+                  onOpenModal({
+                    type: "item",
+                    text: item.text,
+                    clauseIndex: index,
+                    itemIndex: ii,
+                  });
+                }
+              }}
+            >
+              <div className="flex justify-between items-start">
+                <span
                   onClick={(e) => {
-                    if (activeTool === 'text') {
-                      e.stopPropagation()
+                    if (activeTool === "text") {
+                      e.stopPropagation();
                       onOpenModal({
-                        type: 'subpoint',
-                        text: sub,
+                        type: "subpoint",
+                        text: item.text,
                         clauseIndex: index,
                         itemIndex: ii,
-                        subIndex: si
-                      })
+                        subIndex: ii,
+                      });
                     }
                   }}
-                  className={activeTool === 'text' ? 'hover:underline cursor-pointer transition' : ''}
+                  className={
+                    activeTool === "text"
+                      ? "hover:underline cursor-pointer transition"
+                      : ""
+                  }
                 >
-                  {sub}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ol>
-    </div>
-  )
+                  {item.select
+                    ? formatClauseWithSelect(item.text, item.select)
+                    : item.text}
+                </span>
+              </div>
+
+              <ul className="list-[lower-alpha] list-inside pl-4 mt-2 text-sm text-gray-700 space-y-1">
+                {item.subpoints?.map((sub, si) => (
+                  <li
+                    key={si}
+                    onClick={(e) => {
+                      if (activeTool === "text") {
+                        e.stopPropagation();
+                        onOpenModal({
+                          type: "subpoint",
+                          text: sub,
+                          clauseIndex: index,
+                          itemIndex: ii,
+                          subIndex: si,
+                        });
+                      }
+                    }}
+                    className={
+                      activeTool === "text"
+                        ? "hover:underline cursor-pointer transition"
+                        : ""
+                    }
+                  >
+                    {sub}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </>
+  );
 }
 
-export default function ClauseList({ clauses,setClauses, klauzule, activeTool, onOpenModal }) {
-  const [selectedClauseIndex, setSelectedClauseIndex] = useState(null)
-  const [newText, setNewText] = useState('')
-  const [addingTarget, setAddingTarget] = useState(null)
-  const [localClauses, setLocalClauses] = useState(clauses)
-console.log('chce',clauses) 
-  const sensors = useSensors(useSensor(PointerSensor))
+export default function ClauseList({
+  clauses,
+  setClauses,
+  klauzule,
+  activeTool,
+  onOpenModal,
+}) {
+  const [selectedClauseIndex, setSelectedClauseIndex] = useState(null);
+  const [newText, setNewText] = useState("");
+  const [addingTarget, setAddingTarget] = useState(null);
 
-  const handleDragEnd = ({ active, over }) => {
-    if (!over || active.id === over.id) return
-    const oldIndex = localClauses.findIndex(c => c.id === active.id)
-    const newIndex = localClauses.findIndex(c => c.id === over.id)
-    const reordered = arrayMove(localClauses, oldIndex, newIndex)
-    setLocalClauses(reordered)
-  }
+  const sensors = useSensors(useSensor(PointerSensor));
 
   return (
     <>
       <DndContext
-  sensors={sensors}
-  collisionDetection={closestCenter}
-  onDragEnd={({ active, over }) => {
-    if (!over || active.id === over.id) return
-    const oldIndex = parseInt(active.id.split('-')[1], 10)
-    const newIndex = parseInt(over.id.split('-')[1], 10)
-    const reordered = arrayMove(clauses, oldIndex, newIndex)
-    setClauses(reordered)
-  }}
->
-  <SortableContext
-    items={clauses.map((_, i) => `clause-${i}`)}
-    strategy={verticalListSortingStrategy}
-  >
-    {clauses.map((clause, ci) => (
-      <SortableClause
-        key={`clause-${ci}`}
-        clause={clause}
-        index={ci}
-        activeTool={activeTool}
-        onOpenModal={onOpenModal}
-      />
-    ))}
-  </SortableContext>
-</DndContext>
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={({ active, over }) => {
+          if (!over || active.id === over.id) return;
+          const oldIndex = parseInt(active.id.split("-")[1], 10);
+          const newIndex = parseInt(over.id.split("-")[1], 10);
+          setClauses((prev) => arrayMove(prev, oldIndex, newIndex));
+        }}
+      >
+        <SortableContext
+          items={clauses.map((_, i) => `clause-${i}`)}
+          strategy={verticalListSortingStrategy}
+        >
+          {clauses.map((clause, ci) => (
+            <SortableClause
+              key={`clause-${ci}`}
+              clause={clause}
+              index={ci}
+              activeTool={activeTool}
+              onOpenModal={onOpenModal}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+
+   
+
 
       {activeTool === 'clauses' && (
         <button
@@ -253,10 +299,7 @@ console.log('chce',clauses)
               });
             } else if (selectedClauseIndex !== null) {
               const clauseToCopy = klauzule.clauses[selectedClauseIndex];
-              clauses.push({
-                title: clauseToCopy.title,
-                items: [...clauseToCopy.items]
-              });
+              clauses.push(clauseToCopy);
             } else {
               return;
             }
