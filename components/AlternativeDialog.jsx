@@ -20,7 +20,6 @@ export default function AlternativeDialog({
   const [provisionList, setProvisionList] = useState([])
   const [selectedPoints, setSelectedPoints] = useState([])
   const [originalClauseObj, setOriginalClauseObj] = useState(null)
-
  function filterClauseItemsBySelectedPoints(selectedPoints) {
 
   const originalItems = klauzule.clauses[modalData.clauseIndex].items;
@@ -51,6 +50,7 @@ export default function AlternativeDialog({
   const updateProvisionText = (i, text) => setProvisionList(prev => prev.map((t, idx) => idx === i ? text : t))
 
   const onSaveAlternative = () => {
+      updateVariant(variants.length+1,clauses[modalData.clauseIndex])
     const parsed = variants.filter(x => x).map(x => parseInt(x, 10))
     if (!question || parsed.length === 0) return
     addAlternative({ question, variants: parsed, ...modalData })
@@ -59,6 +59,7 @@ export default function AlternativeDialog({
     setQuestion('')
     setIsOpen(false)
   }
+
   const onSaveBinding = () => {
     const selectedVariantIndex = variants[0];
     if (selectedVariantIndex === '' || isNaN(parseInt(selectedVariantIndex))) return;
@@ -109,8 +110,10 @@ setOriginalClauseObj(freshOriginal);
   )
 
   const renderAlternativeForm = () => (
-    <div className="flex flex-col gap-4 mt-4">
+  
+  <div className="flex flex-col gap-4 mt-4">
       <Textarea placeholder="Wpisz pytanie alternatywy..." value={question} onChange={e => setQuestion(e.target.value)} />
+       <input className="w-full border rounded p-2" disabled value={clauses[modalData.clauseIndex].title}/>
       {variants.map((v, i) => (
         <select key={i} className="w-full border rounded p-2" value={v} onChange={e => updateVariant(i, e.target.value)}>
           <option value="" disabled>-- Wybierz klauzulę --</option>

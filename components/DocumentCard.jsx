@@ -28,8 +28,6 @@ export default function DocumentCard() {
   const [bindingData,setBindingData] = useState([])
   const [clauses, setClauses] = useState( mergeClauses(klauzule.clauses, []))
 
-  console.log(alternativeData)
-  console.log(bindingData)
 
   useEffect(() => {
     setClauses(mergeClauses(klauzule.clauses, alternativeData))
