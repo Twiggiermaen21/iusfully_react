@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import ClauseList from './clauses/ClausesList'
-import AlternativeDialog from './AlternativeDialog'
+
 import { klauzule } from '@/data/klauzule'
 
-export default function ContentSection({ activeTool, alternativeData, setAlternativeData,setBindingData, clauses, setClauses }) {
+export default function ContentSection({ activeTool,setBindingData, clauses, setClauses }) {
   const [modalData, setModalData] = useState({ type: null, text: '', clauseIndex: null, itemIndex: null, subIndex: null })
   const [isOpen, setIsOpen] = useState(false)
 
@@ -35,7 +35,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
 
 
 
-      <AlternativeDialog
+      {/* <AlternativeDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         modalData={modalData}
@@ -64,7 +64,7 @@ export default function ContentSection({ activeTool, alternativeData, setAlterna
           ))
           setIsOpen(false)
         }}
-      />
+      /> */}
     </div>
   )
 }

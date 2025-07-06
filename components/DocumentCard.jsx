@@ -53,129 +53,86 @@ export default function DocumentCard() {
       return newAlt
     })
   }
-  return (
-    <div className="flex w-full">
-    {/* Sidebar */}
-    <div className="w-1/5 border-r border-gray-200 bg-white">
-      <SidebarProvider>
-        <AppSidebar activeTool={activeTool} setActiveTool={setActiveTool} />
-        <SidebarTrigger />
-      </SidebarProvider>
+return (
+   <div className="flex w-full bg-gray-50">
+    {/* Toolbar - lewa strona */}
+    <div className="w-1/5 bg-gray-100 border-r flex flex-col p-4 space-y-4">
+      <h3 className="text-lg font-semibold mb-4">Toolbar</h3>
+      <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+        Nowa klauzula
+      </button>
+      <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+        Zapisz
+      </button>
+      <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+        Eksportuj
+      </button>
     </div>
 
-    {/* Główna zawartość */}
-    <div className="document-card w-3/5 p-6 overflow-auto">
-      <ContentSection
-        activeTool={activeTool}
-        alternativeData={alternativeData}
-        setAlternativeData={setAlternativeData}
-        setBindingData={setBindingData}
-        clauses={clauses}
-        setClauses={setClauses}
-        onVariantSelect={handleVariantSelect}
+    {/* Main Content */}
+  
+      {/* Main Document */}
+      <div className="document-card w-3/5 p-6 overflow-auto">
+        <ContentSection
+          activeTool={activeTool}
+          alternativeData={alternativeData}
+          setAlternativeData={setAlternativeData}
+          setBindingData={setBindingData}
+          clauses={clauses}
+          setClauses={setClauses}
+          onVariantSelect={handleVariantSelect}
+        />
+      </div>
+
+      {/* Sidebar with clauses list */}
+     {/* Lista klauzul */}
+   <div className="flex-1 p-6 h-screen  overflow-auto space-y-4">
+  {/* Search & header */}
+  <div className="bg-gray-200">
+  <div className="p-4 border-b  border-gray-200">
+    <div className="relative">
+      <i className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        🔍
+      </i>
+      <input
+        type="text"
+        placeholder="Szukaj klauzul..."
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
     </div>
-
-
-
-    {/* Panel alternatyw */}
-    {/* <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
-      <h2 className="text-lg font-semibold mb-4">Opcje w Umowie</h2>
-      <div className="text-sm text-black space-y-4">
-     {alternativeData.length > 0 ? (
-  alternativeData.map((alt, idx) => {
-     return (
-          <div
-            key={idx}
-            className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
-          >
-            <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-              <p className="text-sm text-gray-500 uppercase tracking-wide">
-                Alternatywa
-              </p>
-              <p className="text-lg font-semibold text-gray-800">
-                Pytanie {alt.clauseIndex + 1}: {alt.question}
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor={`variant-select-${alt.clauseIndex}`}
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Wybierz alternatywę:
-              </label>
-
-              <select
-                id={`variant-select-${alt.clauseIndex}`}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={alt.selectedVariantIndex ?? ""}
-                onChange={e =>
-                  handleVariantSelect(alt.clauseIndex, Number(e.target.value))
-                }
-              >
-                <option value="" disabled>
-                  - wybierz alternatywę -
-                </option>
-                {alt.variants && alt.variants.length > 0 ? (
-                  alt.variants.map((variantIdx, vIdx) => (
-                    <option key={vIdx} value={variantIdx}>
-                      {klauzule.clauses[variantIdx]?.title ||
-                        `Klauzula ${variantIdx + 1}`}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Brak opcji
-                  </option>
-                )}
-              </select>
-            </div>
-          </div>
-
-          
-        );
-        
-  })
-) : (
-  <p className="text-gray-500">Brak zapisanych alternatyw.</p>
-)}
-
-
-    {bindingData.map((bind, idx) => {
-    const targetClauseIndex = bind.selectedVariantIndex;
-   
-    const targetClauseTitle = klauzule.clauses[targetClauseIndex]?.title || `Klauzula ${targetClauseIndex + 1}`;
-    const targetHref = `#clause-${targetClauseIndex}`;
-  console.log(targetHref )
-        return (
-          <div
-            key={idx}
-            className="border border-gray-200 rounded-xl shadow-sm p-5 mb-6 bg-white"
-          >
-            <div className="mb-4 p-4 bg-gray-50 rounded-md border border-gray-200">
-              <p className="text-sm text-gray-500 uppercase tracking-wide">
-                Powiązanie
-              </p>
-              <p className="text-lg font-semibold text-gray-800">
-                Powiązanie klauzuli {bind.clauseIndex + 1}
-              </p>
-            </div>
-
-            <div className="mt-2 text-blue-600 hover:underline cursor-pointer">
-              {targetClauseIndex != null ? (
-                <a href={targetHref}>{targetClauseTitle}</a>
-              ) : (
-                <span className="text-gray-500">Brak wybranej klauzuli</span>
-              )}
-            </div>
-          </div>
-        );
-      })}
-   
-  
-
+    <div className="flex items-center justify-between mt-3">
+      <span className="text-sm text-gray-600">
+        Klauzule ({klauzule.clauses.length})
+      </span>
+      <div className="flex space-x-2">
+        <button className="p-1 text-gray-400 hover:text-gray-600">⚙️</button>
+        <button className="p-1 text-gray-400 hover:text-gray-600">↕️</button>
       </div>
-    </div> */}
+    </div>
   </div>
-)}
+
+  {/* Dynamiczna lista klauzul */}
+    <div id="document-preview" className="p-4 space-y-4">
+    {klauzule.clauses.map((clause, idx) => (
+      <div
+        key={idx}
+        className={`bg-white rounded-lg p-4 border border-gray-200`}
+      >
+        <h4 className="text-sm font-medium text-gray-900 mb-2">{clause.title}</h4>
+        {clause.items.map((item, i) => (
+          <p key={i} className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+            {item.text}
+          </p>
+        ))}
+       
+      </div>
+    ))}
+  </div>
+</div>
+
+</div>
+
+     </div>
+    
+) 
+}

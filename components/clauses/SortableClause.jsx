@@ -314,13 +314,7 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
     </div>
   </div>
 )}
-
-
-
-
-        
-      
-
+ 
         <div className="flex justify-center items-center  mb-2">
           <h1 className="text-xl  font-semibold">§{index + 1} {clause.title}</h1>
           {clause.link && (

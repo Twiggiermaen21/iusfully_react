@@ -4,7 +4,7 @@ import DocumentCard from '@/components/DocumentCard';
 export default function Home() {
   return (
     <>
-      <BackgroundGradient />  
+      {/* <BackgroundGradient />   */}
         <DocumentCard />
     </>
   );
