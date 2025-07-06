@@ -22,7 +22,6 @@ export default function ClauseList({
   modalData,
   klauzule,
   activeTool,
-  onOpenModal,
   setModalData
 }) {
   const [selectedClauseIndex, setSelectedClauseIndex] = useState(null);
@@ -64,7 +63,6 @@ export default function ClauseList({
               modalData={modalData}
               index={ci}
               activeTool={activeTool}
-              onOpenModal={onOpenModal}
               setModalData={setModalData}
             />
           ))}

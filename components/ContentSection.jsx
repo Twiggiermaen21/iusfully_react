@@ -5,13 +5,7 @@ import { klauzule } from '@/data/klauzule'
 
 export default function ContentSection({ activeTool,setBindingData, clauses, setClauses }) {
   const [modalData, setModalData] = useState({ type: null, text: '', clauseIndex: null, itemIndex: null, subIndex: null })
-  const [isOpen, setIsOpen] = useState(false)
-
   console.log(modalData)
-  const openModal = (data) => {
-    setModalData(data)
-    setIsOpen(true)
-  }
 
   const addAlternative = (newAlt) => setAlternativeData(prev => [...prev, newAlt])
   const addBinding=(newBind) =>  setBindingData(prev =>[...prev,newBind])
@@ -26,45 +20,8 @@ export default function ContentSection({ activeTool,setBindingData, clauses, set
         modalData={modalData}
         klauzule = {klauzule}
         activeTool={activeTool}
-        onOpenModal={openModal}
         setModalData={setModalData}
       />
-
-
-
-
-
-
-      {/* <AlternativeDialog
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        modalData={modalData}
-        klauzule={klauzule}
-        clauses={clauses}
-        setClauses = {setClauses}
-        addAlternative={addAlternative}
-        addBinding ={addBinding}
-        handleDelete={() => {
-          // deletion logic moved here
-          const { type, clauseIndex, itemIndex, subIndex } = modalData
-          if (type === 'clause') setClauses(prev => prev.filter((_, i) => i !== clauseIndex))
-          if (type === 'item') setClauses(prev => prev.map((clause, i) => i === clauseIndex
-            ? { ...clause, items: clause.items.filter((_, j) => j !== itemIndex) }
-            : clause
-          ))
-          if (type === 'subpoint') setClauses(prev => prev.map((clause, i) => i === clauseIndex
-            ? {
-                ...clause,
-                items: clause.items.map((item, j) => j === itemIndex
-                  ? { ...item, subpoints: item.subpoints.filter((_, k) => k !== subIndex) }
-                  : item
-                ),
-              }
-            : clause
-          ))
-          setIsOpen(false)
-        }}
-      /> */}
     </div>
   )
 }
