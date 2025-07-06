@@ -79,7 +79,7 @@ export default function DocumentCard() {
 
 
     {/* Panel alternatyw */}
-    <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
+    {/* <div className="w-1/5 p-6 border-l border-gray-200 overflow-auto m-7 bg-gray-400 text-black">
       <h2 className="text-lg font-semibold mb-4">Opcje w Umowie</h2>
       <div className="text-sm text-black space-y-4">
      {alternativeData.length > 0 ? (
@@ -176,6 +176,6 @@ export default function DocumentCard() {
   
 
       </div>
-    </div>
+    </div> */}
   </div>
 )}

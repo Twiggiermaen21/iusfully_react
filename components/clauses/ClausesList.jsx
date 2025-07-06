@@ -60,6 +60,7 @@ export default function ClauseList({
               setClauses={setClauses}
               clause={clause}
               clauses={clauses}
+              klauzule={klauzule}
               modalData={modalData}
               index={ci}
               activeTool={activeTool}
