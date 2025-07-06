@@ -1,5 +1,5 @@
 "use client";
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useId } from "react";
@@ -7,37 +7,40 @@ import HoveringMenu from "./HoveringMenu";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import arrowDOWNUP from "@/public/images/icon-up-dow.svg";
-import formatClauseWithSelect from "@/utils/formatClauseWithSelect";
 
 export default function SortableClause({ setClauses, clause, clauses, modalData, index, activeTool, onOpenModal, setModalData }) {
   const describedById = useId();
   const [isHovering, setIsHovering] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [isAdding, setIsAdding] = useState(false)
+  const [isAdding, setIsAdding] = useState(false);
   const [newText, setNewText] = useState("");
-const [selectedPoints, setSelectedPoints] = useState(() => {
-  let all = [];
-  clause.items.forEach((item, ii) => {
-    all.push(`${ii}`);
-    item.subpoints?.forEach((_, si) => {
-      all.push(`${ii}-${si}`);
-    });
-  });
-  return all;
-});
-const [oldSelectedPoints, setOldSelectedPoints] = useState([]);
 
-useEffect(() => {
-  let all = [];
-  clause.items.forEach((item, ii) => {
-    all.push(`${ii}`);
-    item.subpoints?.forEach((_, si) => {
-      all.push(`${ii}-${si}`);
+  const [selectedPoints, setSelectedPoints] = useState(() => {
+    let all = [];
+    clause.items.forEach((item, ii) => {
+      all.push(`${ii}`);
+      item.subpoints?.forEach((_, si) => {
+        all.push(`${ii}-${si}`);
+      });
     });
+    return all;
   });
-  setSelectedPoints(all);
-}, [clause.items]);
+  const [oldSelectedPoints, setOldSelectedPoints] = useState([]);
 
+  const [requireAtLeastOne, setRequireAtLeastOne] = useState(true);
+  const [hideIfNotSelected, setHideIfNotSelected] = useState(false);
+  const [allowCustomSubpoints, setAllowCustomSubpoints] = useState(false);
+
+  useEffect(() => {
+    let all = [];
+    clause.items.forEach((item, ii) => {
+      all.push(`${ii}`);
+      item.subpoints?.forEach((_, si) => {
+        all.push(`${ii}-${si}`);
+      });
+    });
+    setSelectedPoints(all);
+  }, [clause.items]);
 
   const {
     attributes,
@@ -51,15 +54,61 @@ useEffect(() => {
   });
 
   const style = { transform: CSS.Transform.toString(transform), transition };
-const addProvision = (newObj) => {
-  setClauses(prev => prev.map((clause, i) => {
-    if (i !== modalData.clauseIndex) return clause;
-    return {
-      ...clause,
-      items: [...clause.items, { text: newObj }]
-    };
-  }));
-};
+
+  const toggleSelect = (ii, checked) => {
+    setSelectedPoints(prev =>
+      checked ? [...prev, `${ii}`] : prev.filter(p => p !== `${ii}`)
+    );
+  };
+
+  const updateItemText = (ii, text) => {
+    setClauses(prev =>
+      prev.map((cl, ci) =>
+        ci === index
+          ? { ...cl, items: cl.items.map((item, idx) => idx === ii ? { ...item, text } : item) }
+          : cl
+      )
+    );
+  };
+
+  const updateSubpointText = (ii, si, text) => {
+    setClauses(prev =>
+      prev.map((cl, ci) =>
+        ci === index
+          ? {
+            ...cl,
+            items: cl.items.map((item, idx) =>
+              idx === ii
+                ? { ...item, subpoints: item.subpoints.map((sub, sIdx) => sIdx === si ? text : sub) }
+                : item
+            ),
+          }
+          : cl
+      )
+    );
+  };
+
+  const removeItem = (ii) => {
+    setClauses(prev =>
+      prev.map((cl, ci) =>
+        ci === index
+          ? { ...cl, items: cl.items.filter((_, idx) => idx !== ii) }
+          : cl
+      )
+    );
+  };
+
+  const addProvision = (newObj) => {
+    setClauses(prev =>
+      prev.map((cl, ci) =>
+        ci === index
+          ? { ...cl, items: [...cl.items, { text: newObj, subpoints: [] }] }
+          : cl
+      )
+    );
+    setNewText("");
+  };
+
   return (
     <>
       <div id={describedById} aria-live="assertive" style={{ position: "absolute", left: -9999, top: 0 }} />
@@ -83,128 +132,169 @@ const addProvision = (newObj) => {
         </div>
 
         <div className="flex justify-between items-center mb-2">
-          <h1 className="text-xl font-semibold">{clause.title}</h1>
+          <h1 className="text-xl font-semibold">§{index + 1}. {clause.title}</h1>
         </div>
 
-        <ol className="list-decimal pl-6 space-y-4 text-gray-800">
-          {clause.items?.map((item, ii) => {
-            const itemSelected = selectedPoints.includes(`${ii}`) || item.subpoints?.some((_, si) => selectedPoints.includes(`${ii}-${si}`));
-            if (!isSelecting && !itemSelected) return null;
-            return (
-              <li key={ii} className={`p-3 rounded-lg ${activeTool === "items" && !isSelecting ? "hover:bg-blue-50 cursor-pointer transition" : ""}`} onClick={(e) => {
-                if (activeTool === "items" && !isSelecting) {
-                  e.stopPropagation();
-                  onOpenModal({ type: "item", text: item.text, clauseIndex: index, itemIndex: ii });
-                }
-              }}>
-                <div className="flex justify-between items-start">
-                  {isSelecting ? (
-                    <label className="flex items-center space-x-2">
-                      <input type="checkbox" checked={selectedPoints.includes(`${ii}`)} onChange={(e) => {
-                        setSelectedPoints(prev => e.target.checked ? [...prev, `${ii}`] : prev.filter(id => id !== `${ii}`));
-                      }} />
-                      <span>{item.text}</span>
-                    </label>
-                  ) : (
-                    <span onClick={(e) => {
-                      if (activeTool === "text") {
-                        e.stopPropagation();
-                        onOpenModal({ type: "subpoint", text: item.text, clauseIndex: index, itemIndex: ii, subIndex: ii });
-                      }
-                    }} className={activeTool === "text" ? "hover:underline cursor-pointer transition" : ""}>
-                      {item.select ? formatClauseWithSelect(item.text, item.select) : item.text}
-                    </span>
-                  )}
-                </div>
-
-               
-
-
-                <ul className="list-[lower-alpha] list-inside pl-4 mt-2 text-sm text-gray-700 space-y-1">
-                  {item.subpoints?.map((sub, si) => {
-                    const subSelected = selectedPoints.includes(`${ii}-${si}`);
-                    if (!isSelecting && !subSelected) return null;
-                    return (
-                      <li key={si}>
-                        {isSelecting ? (
-                          <label className="flex items-center space-x-2 ml-6">
-                            <input type="checkbox" checked={subSelected} onChange={(e) => {
-                              setSelectedPoints(prev => e.target.checked ? [...prev, `${ii}-${si}`] : prev.filter(id => id !== `${ii}-${si}`));
-                            }} />
-                            <span>{sub}</span>
-                          </label>
-                        ) : (
-                          <span onClick={(e) => {
-                            if (activeTool === "text") {
-                              e.stopPropagation();
-                              onOpenModal({ type: "subpoint", text: sub, clauseIndex: index, itemIndex: ii, subIndex: si });
-                            }
-                          }} className={activeTool === "text" ? "hover:underline cursor-pointer transition" : ""}>{sub}</span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            );
-          })}
-           {isAdding && (
-                  <div className="mt-4 flex flex-col gap-2">
-                    <textarea
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                      rows={3}
-                      placeholder="Wpisz coś..."
-                      value={newText}
-                      onChange={(e) => setNewText(e.target.value)}
-                    />
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          console.log("Zapisuję:", newText);
-                          setIsAdding(false);
-                           addProvision(newText)
-                        }}
-                        className="px-3 py-1 bg-blue-600 text-white rounded-md"
-                      >
-                        ✅ Zapisz
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsAdding(false);
-                          setNewText('');
-                        }}
-                        className="px-3 py-1 bg-gray-300 rounded-md"
-                      >
-                        ❌ Anuluj
-                      </button>
+        <div className="space-y-4 mb-6">
+          {clause.items?.map((item, ii) => (
+            <div
+              key={ii}
+              className={`${isSelecting ? "border border-gray-200 rounded-lg p-4" : ""}`}
+            >
+              {isSelecting ? (
+                <>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <span className="font-medium text-gray-900 mr-2">{ii + 1}.</span>
+                      <div className="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input
+                          type="checkbox"
+                          checked={selectedPoints.includes(`${ii}`)}
+                          onChange={(e) => toggleSelect(ii, e.target.checked)}
+                          className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-transform duration-200 ease-in checked:translate-x-full checked:border-primary"
+                          id={`toggle-${ii}`}
+                        />
+                        <label htmlFor={`toggle-${ii}`} className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                      </div>
+                      <span className="ml-2 text-xs text-gray-600">Opcjonalny</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button {...listeners} className="text-gray-400 hover:text-gray-600 cursor-grab">⭥</button>
+                      <button className="text-gray-400 hover:text-danger" onClick={() => removeItem(ii)}>🗑️</button>
                     </div>
                   </div>
-                )}
-        </ol>
 
-       {isSelecting && (
-  <div className="flex space-x-4 mt-4">
-    <Button
-      variant="success"
-      onClick={() => {
-        console.log("Zapisz wybrane:", selectedPoints);
-        setIsSelecting(false);
-      }}
-    >
-      ✅ Zapisz
-    </Button>
-    <Button
-      variant="destructive"
-      onClick={() => {
-        setSelectedPoints(oldSelectedPoints); // 🔥 kluczowa zmiana
-        setIsSelecting(false);
-      }}
-    >
-      ❌ Anuluj
-    </Button>
-  </div>
-)}
+                  <textarea
+                    className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Treść podpunktu..."
+                    value={item.text}
+                    onChange={(e) => updateItemText(ii, e.target.value)}
+                  />
+
+                  {item.subpoints?.map((sub, si) => (
+                    <textarea
+                      key={si}
+                      className="w-full p-2 mt-2 border border-gray-200 rounded-lg"
+                      placeholder="Treść pod-podpunktu..."
+                      value={sub}
+                      onChange={(e) => updateSubpointText(ii, si, e.target.value)}
+                    />
+                  ))}
+
+                </>
+              ) : (
+                <>
+                  <div className="flex items-start space-x-2">
+                    <span className="font-medium text-gray-900">{ii + 1}.</span>
+                    <p className="text-gray-700">{item.text}</p>
+                  </div>
+                  {item.subpoints?.length > 0 && (
+                    <ul className="list-[lower-alpha] pl-6 mt-2 text-sm text-gray-700 space-y-1">
+                      {item.subpoints.map((sub, si) => (
+                        <li key={si}>{sub}</li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+          {isSelecting && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-6">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Ustawienia opcjonalności</h3>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={requireAtLeastOne}
+                    onChange={(e) => setRequireAtLeastOne(e.target.checked)}
+                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label className="ml-2 text-sm text-gray-700">
+                    Wymagaj wyboru co najmniej jednego podpunktu opcjonalnego
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={hideIfNotSelected}
+                    onChange={(e) => setHideIfNotSelected(e.target.checked)}
+                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label className="ml-2 text-sm text-gray-700">
+                    Ukryj całkowicie niezaznaczone podpunkty w finalnym dokumencie
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={allowCustomSubpoints}
+                    onChange={(e) => setAllowCustomSubpoints(e.target.checked)}
+                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label className="ml-2 text-sm text-gray-700">
+                    Pozwól klientowi dodawać własne podpunkty
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {isAdding && (
+          <div className="mt-4 flex flex-col gap-2">
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded-md"
+              rows={3}
+              placeholder="Wpisz coś..."
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setIsAdding(false);
+                  addProvision(newText);
+                }}
+                className="px-3 py-1 bg-blue-600 text-white rounded-md"
+              >
+                ✅ Zapisz
+              </button>
+              <button
+                onClick={() => {
+                  setIsAdding(false);
+                  setNewText('');
+                }}
+                className="px-3 py-1 bg-gray-300 rounded-md"
+              >
+                ❌ Anuluj
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isSelecting && (
+          <div className="flex space-x-4 mt-4">
+            <Button
+              variant="success"
+              onClick={() => {
+                console.log("Zapisz wybrane:", selectedPoints);
+                setIsSelecting(false);
+              }}
+            >
+              ✅ Zapisz
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setSelectedPoints(oldSelectedPoints);
+                setIsSelecting(false);
+              }}
+            >
+              ❌ Anuluj
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

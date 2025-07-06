@@ -15,6 +15,9 @@ export default function HoveringMenu({ modalData, clauses, setClauses, setIsSele
             <Button variant="outline" size="sm" onClick={() => {setOldSelectedPoints(selectedPoints);setIsSelecting(true);}}>📌 Wybierz punkty</Button>
             <Button variant="outline" size="sm" onClick={() => {setIsAdding(true) ;setNewText('')}}>➕ Dodaj postanowienie</Button>
             <Button variant="destructive" onClick={() => Delete(modalData, clauses, setClauses)}  >  🗑️ Usuń   </Button>
+       
+      
+       
         </div>
     )
 }
