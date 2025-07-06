@@ -15,29 +15,7 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
   const [isAdding, setIsAdding] = useState(false);
   const [newText, setNewText] = useState("");
   const [rules, setRules] = useState([
-    {
-      id: 1,
-      type: "success",
-      ifField: "Typ umowy",
-      ifOp: "jest",
-      ifValue: "Umowa o dzieło",
-      action: "Pokaż",
-      clause: "Wynagrodzenie",
-    },
-    {
-      id: 2,
-      type: "warning",
-      ifField: "Wynagrodzenie",
-      ifOp: "jest",
-      ifValue: "Aktywne",
-      logic: "AND",
-      ifExtra: "Wartość",
-      compare: ">",
-      number: 1000,
-      action: "Pokaż",
-      clause: "Prawa autorskie",
-      warning: "Ta reguła może powodować cykliczną zależność"
-    }
+    
   ]);
 
   const addRule = () => {
@@ -233,24 +211,19 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
             </div>
           )}
 
+
+  {isHovering && (
+            <Button {...listeners} className="absolute right-1 bg-amber-300 cursor-grab">
+              <Image alt="arrow" src={arrowDOWNUP} />
+            </Button>
+          )}
+  </div>
     {isAlternative && (
-  <div
-    ref={(ref) => {
-      if (ref) {
-        const handler = (e) => {
-          if (!ref.contains(e.target)) {
-            setIsAlternative(false);
-          }
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-      }
-    }}
-    className="absolute top-full left-0 mt-2 w-full max-h-96 overflow-y-auto bg-gradient-to-b from-white via-gray-50 to-gray-100 border border-gray-300 rounded-2xl shadow-2xl p-6 z-50"
-  >
+  <div className="bg-white  p-6 mb-4 w-full max-w-6xl mx-auto">
     <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-300 pb-2">
       Reguły zależności
     </h3>
+
     <div className="space-y-5">
       {rules.map((rule, index) => (
         <div
@@ -329,27 +302,24 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
           )}
         </div>
       ))}
-    </div>
 
-    <div className="mt-6">
-      <button
-        onClick={addRule}
-        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
-      >
-        <i className="fa-solid fa-plus mr-2"></i> Dodaj kolejną regułę
-      </button>
+      <div className="pt-4">
+        <button
+          onClick={addRule}
+          className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+        >
+          <i className="fa-solid fa-plus mr-2"></i> Dodaj kolejną regułę
+        </button>
+      </div>
     </div>
   </div>
 )}
 
 
 
-          {isHovering && (
-            <Button {...listeners} className="absolute right-1 bg-amber-300 cursor-grab">
-              <Image alt="arrow" src={arrowDOWNUP} />
-            </Button>
-          )}
-        </div>
+
+        
+      
 
         <div className="flex justify-center items-center  mb-2">
           <h1 className="text-xl  font-semibold">§{index + 1} {clause.title}</h1>
