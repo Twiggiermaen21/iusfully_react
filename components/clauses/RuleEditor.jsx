@@ -67,8 +67,7 @@ export default function RuleEditor({ rules, isHovering, setRules, addRule, klauz
         {rules.map((rule, index) => (
           <div
             key={rule.id}
-            className={`rounded-xl p-4 border transition 
-              ${rule.type === "success" ? "bg-green-50 border-green-200" : "bg-amber-50 border-amber-200"}`}
+            className={"rounded-xl p-4 border transition  bg-green-50 border-green-200" }
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
