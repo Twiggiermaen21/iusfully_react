@@ -76,7 +76,11 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
     id: `clause-${index}`,
     transition: { duration: 650, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
   });
-
+useEffect(() => {
+  if (!isHovering && rules.length===0) {
+    setIsAlternative(false);
+  }
+}, [isHovering]);
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   const toggleSelect = (ii, checked) => {
@@ -171,7 +175,10 @@ export default function SortableClause({ setClauses, clause, clauses, klauzule, 
         {isAlternative && (
           <RuleEditor
             rules={rules}
+            isHovering={isHovering}
+            setRules={setRules}
             addRule={addRule}
+            klauzule={klauzule}
             removeRule={removeRule}
           />
         )}

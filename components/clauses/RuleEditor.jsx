@@ -1,16 +1,67 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
+import { TrashIcon, PlusIcon, PencilIcon } from '@heroicons/react/24/solid'
 
-export default function RuleEditor({ rules, addRule, removeRule }) {
-  // dynamiczne listy zmiennych
-  const [fields, setFields] = useState(["Pole A", "Pole B"])
-  const [values, setValues] = useState(["Wartość X", "Wartość Y"])
-  const [clauses, setClauses] = useState(["Klauzula 1", "Klauzula 2"])
+export default function RuleEditor({ rules, isHovering, setRules, addRule, klauzule, removeRule }) {
+  const availableFields = ["Pole A", "Pole B", "Pole C"];
+  console.log(klauzule.clauses[0].title)
+  const [option, setOption] = useState([]);
+  const [newClauseInputFor, setNewClauseInputFor] = useState(null);
+
+  const toggleEditing = (id) => {
+    setRules(rules.map(rule =>
+      rule.id === id ? { ...rule, editing: !rule.editing } : rule
+    ));
+  };
+
+  const addVariantToRule = (id) => {
+    setRules(rules.map(rule =>
+      rule.id === id
+        ? {
+          ...rule,
+          variants: [
+            ...(rule.variants || []),
+            { condition: availableFields[0], result: availableFields[0] }
+          ]
+        }
+        : rule
+    ));
+  };
+
+  const updateVariant = (ruleId, variantIndex, field, value) => {
+    setRules(rules.map(rule => {
+      if (rule.id === ruleId) {
+        const updatedVariants = [...(rule.variants || [])];
+        updatedVariants[variantIndex] = {
+          ...updatedVariants[variantIndex],
+          [field]: value
+        };
+        return { ...rule, variants: updatedVariants };
+      }
+      return rule;
+    }));
+  };
+
+  const updateClause = (ruleId, value) => {
+    if (value === "__new") {
+      setNewClauseInputFor(ruleId);
+    } else {
+      setRules(rules.map(rule =>
+        rule.id === ruleId ? { ...rule, clause: value } : rule
+      ));
+    }
+  };
+
+  const saveNewClause = (ruleId, value) => {
+    setOption([...option, value]);
+    setRules(rules.map(rule =>
+      rule.id === ruleId ? { ...rule, clause: value } : rule
+    ));
+    setNewClauseInputFor(null);
+  };
 
   return (
     <div className="bg-white p-6 mb-4 w-full max-w-6xl mx-auto">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-300 pb-2">
-        Reguły zależności
-      </h3>
+
 
       <div className="space-y-5">
         {rules.map((rule, index) => (
@@ -21,134 +72,148 @@ export default function RuleEditor({ rules, addRule, removeRule }) {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
-                {rule.type === "success" ? (
-                  <i className="fa-solid fa-circle-check text-green-500"></i>
-                ) : (
-                  <i className="fa-solid fa-triangle-exclamation text-amber-500"></i>
-                )}
                 <span className="font-medium text-gray-900">Reguła {index + 1}</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <button className="p-1 text-gray-400 hover:text-gray-600 transition">
-                  <i className="fa-solid fa-pen-to-square"></i>
+              {isHovering && (<div className="flex items-center space-x-2">
+                <button
+                  onClick={() => toggleEditing(rule.id)}
+                  className="p-1 text-gray-400 hover:text-yellow-500 transition"
+                >
+                  <PencilIcon className="w-5 h-5 text-gray-500" />
                 </button>
                 <button
                   onClick={() => removeRule(rule.id)}
                   className="p-1 text-gray-400 hover:text-red-600 transition"
                 >
-                  <i className="fa-solid fa-trash"></i>
+                  <TrashIcon className="w-5 h-5" />
                 </button>
-              </div>
+              </div>)}
+
             </div>
 
-            <div className="space-y-3 text-sm">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium text-gray-700">JEŚLI</span>
-                
-                <select
-                  className="px-3 py-1 border border-gray-300 rounded text-sm"
-                  onChange={(e) => {
-                    if (e.target.value === "__new") {
-                      const newField = prompt("Podaj nazwę nowego pola:")
-                      if (newField) setFields([...fields, newField])
-                    } else {
-                      rule.ifField = e.target.value
-                    }
-                  }}
+            {/* textarea + inline add clause */}
+            <div className={`${rule.editing ? "flex gap-4 mb-4" : "flex items-center justify-between mb-4"}`}>
+              {rule.editing ? (<textarea
+                value={rule.description || ""}
+                onChange={(e) =>
+                  setRules(rules.map(r =>
+                    r.id === rule.id ? { ...r, description: e.target.value } : r
+                  ))
+                }
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-sm resize-none"
+                rows={2}
+                placeholder="Dodaj opis dla tej reguły..."
+              />) : (<h1 className="text-xl font-semibold text-gray-900 pl-2">
+                {rule.description || "tutaj będzie polecenie"}
+              </h1>)
+              }
+              {(newClauseInputFor === rule.id || option.length === 0) ? (
+                rule.editing ? (
+                  <input
+                    autoFocus
+                    type="text"
+                    onBlur={(e) => saveNewClause(rule.id, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        saveNewClause(rule.id, e.target.value);
+                      }
+                    }}
+                    className="w-48 px-3 py-2 border border-gray-300 rounded text-sm"
+                    placeholder="Nowa klauzula..."
+                  />) : (<h1>{rule.clause || "opcja"}</h1>)
+
+              ) : (
+                rule.editing ? (<select
+                  value={rule.clause || ""}
+                  onChange={(e) => updateClause(rule.id, e.target.value)}
+                  className="w-48 px-3 py-2 border border-gray-300 rounded-xl text-sm"
                 >
-                  <option>{rule.ifField || "Pole"}</option>
-                  {fields.map((f, idx) => (
-                    <option key={idx} value={f}>{f}</option>
-                  ))}
-                  <option value="__new">+ Dodaj nową zmienną...</option>
-                </select>
-
-                <span className="text-gray-500">{rule.ifOp}</span>
-
-                <select
-                  className="px-3 py-1 border border-gray-300 rounded text-sm"
-                  onChange={(e) => {
-                    if (e.target.value === "__new") {
-                      const newVal = prompt("Podaj nową wartość:")
-                      if (newVal) setValues([...values, newVal])
-                    } else {
-                      rule.ifValue = e.target.value
-                    }
-                  }}
-                >
-                  <option>{rule.ifValue || "Wartość"}</option>
-                  {values.map((v, idx) => (
-                    <option key={idx} value={v}>{v}</option>
-                  ))}
-                  <option value="__new">+ Dodaj nową zmienną...</option>
-                </select>
-
-                {rule.logic && (
-                  <>
-                    <select className="px-3 py-1 border border-gray-300 rounded text-sm bg-blue-50">
-                      <option>{rule.logic}</option>
-                    </select>
-                    <select className="px-3 py-1 border border-gray-300 rounded text-sm">
-                      <option>{rule.ifExtra || "Pole"}</option>
-                    </select>
-                    <span className="text-gray-500">{rule.compare || ">"}</span>
-                    <input
-                      type="number"
-                      value={rule.number || ""}
-                      className="w-20 px-3 py-1 border border-gray-300 rounded text-sm"
-                      readOnly
-                    />
-                  </>
-                )}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium text-gray-700">TO</span>
-
-                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
-                  <option>{rule.action}</option>
-                </select>
-
-                <span className="text-gray-500">klauzulę</span>
-
-                <select
-                  className="px-3 py-1 border border-gray-300 rounded text-sm"
-                  onChange={(e) => {
-                    if (e.target.value === "__new") {
-                      const newClause = prompt("Podaj nazwę nowej klauzuli:")
-                      if (newClause) setClauses([...clauses, newClause])
-                    } else {
-                      rule.clause = e.target.value
-                    }
-                  }}
-                >
-                  <option>{rule.clause || "Klauzula"}</option>
-                  {clauses.map((c, idx) => (
+                  {option.map((c, idx) => (
                     <option key={idx} value={c}>{c}</option>
                   ))}
                   <option value="__new">+ Dodaj nową zmienną...</option>
-                </select>
-              </div>
+                </select>) : (<h1 className="text-lg font-semibold text-gray-700 pr-2">
+                  {rule.clause || "opcja"}
+                </h1>)
+              )}
             </div>
 
-            {rule.warning && (
-              <div className="mt-4 p-2 bg-amber-100 rounded text-sm text-amber-800 flex items-start">
-                <i className="fa-solid fa-circle-info mr-2"></i>
-                <span>{rule.warning}</span>
+            {/* jeżeli [select] to [select] */}
+            {(rule.variants || []).map((variant, idx) => (
+              rule.editing && (
+                <div key={idx} className="flex flex-wrap items-center gap-2 text-sm mb-2">
+
+
+                  <span className="font-medium text-gray-700">
+                    {idx === 0 ? "jeżeli" : "a jeżeli"}
+                  </span>
+
+                  {rule.editing ? (
+                    <select
+                      value={variant.condition}
+                      onChange={(e) => updateVariant(rule.id, idx, "condition", e.target.value)}
+                      className="px-3 py-1 border border-gray-300 rounded text-sm"
+                    >
+
+                      {option?.map((op, i) => (
+                        <option key={i} value={op}>{op}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <>
+                      {/* <div className="px-3 py-1 border border-gray-200 rounded text-sm bg-gray-50">
+                    {variant.condition}
+                  </div> */}
+                    </>
+                  )}
+
+                  <span className="text-gray-500">to</span>
+
+                  {rule.editing ? (
+                    <select
+                      value={variant.result}
+                      onChange={(e) => updateVariant(rule.id, idx, "result", e.target.value)}
+                      className="px-3 py-1 border border-gray-300 rounded text-sm"
+                    >
+                      {klauzule.clauses?.map((clause, i) => (
+                        <option key={i} value={clause.title}>{clause.title}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <>
+                      {/* <div className="px-3 py-1 border border-gray-200 rounded text-sm bg-gray-50">
+                    {variant.result}
+                  </div> */}
+                    </>
+                  )}
+                </div>
+              )
+            ))}
+
+            {rule.editing && (
+              <div className="flex space-x-2 mt-2">
+                <button
+                  onClick={() => addVariantToRule(rule.id)}
+                  className="px-4 py-1 border border-gray-300 rounded text-sm text-gray-600 hover:bg-gray-50"
+                >
+                  + Dodaj wariant
+                </button>
               </div>
             )}
           </div>
         ))}
-
-        <div className="pt-4">
+        {isHovering  && (<div className="pt-4">
           <button
             onClick={addRule}
-            className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+            className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-600 transition flex items-center justify-center"
           >
-            <i className="fa-solid fa-plus mr-2"></i> Dodaj kolejną regułę
+            <PlusIcon className="w-5 h-5 mr-2" /> Dodaj kolejną regułę
           </button>
-        </div>
+        </div>)}
+
+
       </div>
     </div>
-  )
+  );
 }
