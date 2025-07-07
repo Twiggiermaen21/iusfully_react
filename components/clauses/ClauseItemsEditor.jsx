@@ -66,10 +66,74 @@ export default function ClauseItemsEditor({
             </>
           ) : (
             <>
-              <div className="flex items-start space-x-2">
-                <span className="font-medium text-gray-900">{ii + 1}.</span>
-                <p className="text-gray-700">{item.text}</p>
-              </div>
+        <div className="flex items-start space-x-2">
+  <span className="font-medium text-gray-900">{ii + 1}.</span>
+  <div className="text-gray-700  items-center flex-wrap">
+  {item.text?.split("[select]").map((part, idx, arr) => (
+  <React.Fragment key={idx}>
+    <span>{part}</span>
+    {idx < arr.length - 1 && item.select && (
+      <>
+        {item.newInput ? (
+          <input
+            autoFocus
+            type="text"
+            onBlur={(e) => {
+              const newVal = e.target.value.trim();
+              if (newVal) {
+                item.select.options.push({ value: newVal, label: newVal });
+                item.select.value = newVal;
+              }
+              delete item.newInput;
+              
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const newVal = e.target.value.trim();
+                if (newVal) {
+                  item.select.options.push({ value: newVal, label: newVal });
+                  item.select.value = newVal;
+                }
+                delete item.newInput;
+                
+              }
+            }}
+            className="mx-1 px-3 py-1 border border-gray-300 rounded text-sm"
+            placeholder="Nowy atrybut..."
+          />
+        ) : (
+          <select
+            name={item.select.name}
+            value={item.select.value || ""}
+            onChange={(e) => {
+              if (e.target.value === "__new") {
+                item.newInput = true;
+              } else {
+                item.select.value = e.target.value;
+              }
+            
+            }}
+            className="mx-1 px-3 py-2 border border-gray-300 rounded text-sm shadow-sm 
+             focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50
+             transition ease-in-out duration-150"
+          >
+            
+            {item.select.options.map((opt, i) => (
+              <option key={i} value={opt.value} className=" font-semibold">
+                {opt.label}
+              </option>
+            ))}
+            <option className="text-green-700  font-semibold tracking-wide" value="__new">+ Dodaj nową zmienną...</option>
+          </select>
+        )}
+      </>
+    )}
+  </React.Fragment>
+))}
+
+  </div>
+</div>
               {item.subpoints?.length > 0 && (
                 <ul className="list-[lower-alpha] pl-6 mt-2 text-sm text-gray-700 space-y-1">
                   {item.subpoints.map((sub, si) => (
@@ -77,6 +141,8 @@ export default function ClauseItemsEditor({
                   ))}
                 </ul>
               )}
+
+
             </>
           )}
         </div>

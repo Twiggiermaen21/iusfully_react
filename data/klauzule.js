@@ -31,7 +31,7 @@ export const klauzule = {
       items: [
         {
           text:
-            "Niniejsza umowa zostaje zawarta na czas nieokreślony. Pomoc prawna będzie świadczona przez Kancelarię w ramach poszczególnych zleceń, w zależności od zapotrzebowania Klienta.",
+            "Niniejsza umowa zostaje zawarta na [select]. Pomoc prawna będzie świadczona przez Kancelarię w ramach poszczególnych zleceń, w zależności od zapotrzebowania Klienta.",
           select: {
             name: "duration",
             options: [
