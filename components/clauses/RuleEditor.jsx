@@ -1,6 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 
 export default function RuleEditor({ rules, addRule, removeRule }) {
+  // dynamiczne listy zmiennych
+  const [fields, setFields] = useState(["Pole A", "Pole B"])
+  const [values, setValues] = useState(["Wartość X", "Wartość Y"])
+  const [clauses, setClauses] = useState(["Klauzula 1", "Klauzula 2"])
+
   return (
     <div className="bg-white p-6 mb-4 w-full max-w-6xl mx-auto">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-300 pb-2">
@@ -39,13 +44,45 @@ export default function RuleEditor({ rules, addRule, removeRule }) {
             <div className="space-y-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium text-gray-700">JEŚLI</span>
-                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                
+                <select
+                  className="px-3 py-1 border border-gray-300 rounded text-sm"
+                  onChange={(e) => {
+                    if (e.target.value === "__new") {
+                      const newField = prompt("Podaj nazwę nowego pola:")
+                      if (newField) setFields([...fields, newField])
+                    } else {
+                      rule.ifField = e.target.value
+                    }
+                  }}
+                >
                   <option>{rule.ifField || "Pole"}</option>
+                  {fields.map((f, idx) => (
+                    <option key={idx} value={f}>{f}</option>
+                  ))}
+                  <option value="__new">+ Dodaj nową zmienną...</option>
                 </select>
+
                 <span className="text-gray-500">{rule.ifOp}</span>
-                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+
+                <select
+                  className="px-3 py-1 border border-gray-300 rounded text-sm"
+                  onChange={(e) => {
+                    if (e.target.value === "__new") {
+                      const newVal = prompt("Podaj nową wartość:")
+                      if (newVal) setValues([...values, newVal])
+                    } else {
+                      rule.ifValue = e.target.value
+                    }
+                  }}
+                >
                   <option>{rule.ifValue || "Wartość"}</option>
+                  {values.map((v, idx) => (
+                    <option key={idx} value={v}>{v}</option>
+                  ))}
+                  <option value="__new">+ Dodaj nową zmienną...</option>
                 </select>
+
                 {rule.logic && (
                   <>
                     <select className="px-3 py-1 border border-gray-300 rounded text-sm bg-blue-50">
@@ -67,12 +104,29 @@ export default function RuleEditor({ rules, addRule, removeRule }) {
 
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium text-gray-700">TO</span>
+
                 <select className="px-3 py-1 border border-gray-300 rounded text-sm">
                   <option>{rule.action}</option>
                 </select>
+
                 <span className="text-gray-500">klauzulę</span>
-                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+
+                <select
+                  className="px-3 py-1 border border-gray-300 rounded text-sm"
+                  onChange={(e) => {
+                    if (e.target.value === "__new") {
+                      const newClause = prompt("Podaj nazwę nowej klauzuli:")
+                      if (newClause) setClauses([...clauses, newClause])
+                    } else {
+                      rule.clause = e.target.value
+                    }
+                  }}
+                >
                   <option>{rule.clause || "Klauzula"}</option>
+                  {clauses.map((c, idx) => (
+                    <option key={idx} value={c}>{c}</option>
+                  ))}
+                  <option value="__new">+ Dodaj nową zmienną...</option>
                 </select>
               </div>
             </div>
